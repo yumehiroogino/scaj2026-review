@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>SCAJ2026 ロール文言レビュー</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap">
+<style>
+  html{color-scheme:light}
+  :root{
+    --bg:#edede8; --ink:#1a1a1a; --ink-2:#4a4a46; --ink-3:#8a8a84; --rule:#1a1a1a;
+    --rule-soft:rgba(26,26,26,.28); --field:#f8f8f5; --bar:#e4e4de;
+    --roll:#f6f4ee; --stage:#d9d9d4; --soil:#3d3026; --bag:#ede5d6;
+    --ok:#2f6b3a; --warn:#a0521a; --err:#a3302b;
+    --hdr:44px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1c1c1a; --ink:#edede8; --ink-2:#c2c2bb; --ink-3:#8c8c85; --rule:#edede8;
+      --rule-soft:rgba(237,237,232,.28); --field:#2a2a27; --bar:#262624;
+      --ok:#8fd19b; --warn:#f0a56a; --err:#f08a84;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1c1c1a; --ink:#edede8; --ink-2:#c2c2bb; --ink-3:#8c8c85; --rule:#edede8;
+    --rule-soft:rgba(237,237,232,.28); --field:#2a2a27; --bar:#262624;
+    --ok:#8fd19b; --warn:#f0a56a; --err:#f08a84;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",system-ui,sans-serif;font-weight:400;font-size:13px;line-height:1.6;display:flex;flex-direction:column;overflow:hidden}
+  button,input,textarea,select{font:inherit;color:inherit}
+  button{background:none;border:1px solid var(--rule);border-radius:0;padding:5px 12px;cursor:pointer;line-height:1.4;white-space:nowrap}
+  button:hover{background:var(--ink);color:var(--bg)}
+  button.primary{border-width:1.5px;font-weight:500}
+  button.primary:hover{background:var(--ink);color:var(--bg)}
+  button:focus-visible,textarea:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+  button[disabled]{opacity:.4;cursor:default}
+  button[disabled]:hover{background:none;color:inherit}
+  button.primary[disabled]:hover{background:none;color:inherit}
+
+  header{border-bottom:1px solid var(--rule);padding:6px 16px;display:flex;gap:14px;align-items:center;flex:none;min-height:var(--hdr)}
+  header h1{font-size:15px;font-weight:300;margin:0;letter-spacing:.02em;white-space:nowrap}
+  header .sub{font-size:10px;color:var(--ink-3);font-weight:300;white-space:nowrap}
+  .faces{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none;padding:4px 2px}
+  .faces::-webkit-scrollbar{display:none}
+  .faces button{padding:2px 8px;min-width:34px;font-variant-numeric:tabular-nums;position:relative;border-color:var(--rule-soft);flex:none}
+  .faces button.on{background:none;color:inherit;border-color:var(--ink);border-width:2px;font-weight:500}
+  .faces button .ok{font-size:9px;margin-left:3px;color:var(--ok)}
+  .faces button .chg{position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
+  .faces .sep{width:1px;background:var(--rule-soft);margin:0 4px;flex:none}
+  .status{font-size:11px;color:var(--ink-3);text-align:right;white-space:nowrap}
+
+  main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);overflow:hidden}
+  .preview{display:flex;flex-direction:column;border-right:1px solid var(--rule);min-width:0;min-height:0;background:var(--bg);overflow:hidden;contain:size layout}
+  .ptools{display:flex;gap:6px;align-items:center;padding:5px 12px;border-bottom:1px solid var(--rule-soft);font-size:11px;color:var(--ink-2);flex:none}
+  .ptools .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ptools button{padding:1px 8px;font-size:11px;border-color:var(--rule-soft)}
+  .ptools button.on{background:none;border-color:var(--ink);font-weight:500}
+  .map{flex:none;height:auto;max-height:26%;border-bottom:1px solid var(--rule-soft);padding:2px 8px;background:var(--bg)}
+  .map[hidden]{display:none}
+  .map svg{width:100%;height:auto;max-height:100%;display:block;color:var(--ink)}
+  .map .ln{fill:none;stroke:currentColor;stroke-width:14}
+  .map .thin{fill:none;stroke:currentColor;stroke-width:8;opacity:.55}
+  .map .fill{fill:currentColor;opacity:.12;stroke:none}
+  .map .roll{fill:var(--roll);stroke:currentColor;stroke-width:10}
+  .map .lab{font-size:150px;fill:currentColor;opacity:.7;font-weight:300}
+  .map .lab.b{font-size:170px;opacity:.9;font-weight:400}
+  .map .mk{cursor:pointer}
+  .map .mk circle{fill:var(--bg);stroke:currentColor;stroke-width:22}
+  .map .mk text{font-size:200px;fill:currentColor;text-anchor:middle;dominant-baseline:central;font-weight:400}
+  .map .mk.on circle{stroke-width:60} .map .mk.on text{font-weight:500}
+  .map .mk.ghost{cursor:default} .map .mk.ghost circle{stroke-dasharray:40 40;opacity:.45} .map .mk.ghost text{opacity:.45}
+  .map .mk.okd circle{stroke:var(--ok);stroke-width:34}
+  .map .mk:hover circle{stroke-width:40}
+  .stage{flex:1;position:relative;overflow:hidden;background:var(--bg);min-height:0}
+  body.fonts-loading .frame{visibility:hidden}
+  .scroller{position:relative;overflow:hidden}
+  .frame{position:absolute;transform-origin:0 0;left:0;top:0;color:#1a1a1a;will-change:transform}
+  .frame .r{position:absolute;border:0 solid #1a1a1a}
+  .frame .t{position:absolute;margin:0;white-space:pre-wrap;word-break:break-all;overflow-wrap:anywhere;cursor:pointer;-webkit-font-smoothing:antialiased;backface-visibility:hidden}
+  .frame .t.hl{outline:2px dashed rgba(160,82,26,.9);outline-offset:6px}
+  .flnote{position:absolute;right:0;bottom:0;text-align:right;padding:2px 10px;font-size:10px;color:var(--ink-3);pointer-events:none;background:var(--bg)}
+  .stage{contain:size layout}
+
+  .edcol{display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden;contain:size layout}
+  .editor{flex:1;overflow:auto;padding:12px 16px 24px;min-width:0;display:flex;flex-direction:column;gap:12px}
+  .editor h2{font-size:14px;font-weight:400;margin:0;line-height:1.4}
+  .editor h2 small{display:block;font-size:11px;color:var(--ink-3);font-weight:300}
+  .grp{border-top:1px solid var(--rule);padding-top:6px}
+  .grp > .gl{font-size:10px;letter-spacing:.12em;color:var(--ink-3);margin-bottom:4px}
+  details.memo summary{cursor:pointer;list-style:none}
+  details.memo summary::-webkit-details-marker{display:none}
+  details.memo[open] summary{margin-bottom:6px}
+  .fld{display:grid;grid-template-columns:1fr;gap:3px;padding:6px 0;border-bottom:1px solid var(--rule-soft)}
+  .fld .lab{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--ink-2)}
+  .fld .lab .meta{color:var(--ink-3);font-weight:300;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .fld textarea{width:100%;background:var(--field);border:1px solid var(--rule-soft);padding:6px 8px;resize:vertical;min-height:38px;line-height:1.6;font-size:16px}
+  .fld textarea.big{font-family:"Noto Serif JP",serif;font-size:17px}
+  .fld.diff textarea{border-color:var(--warn)}
+  .fld.unsaved textarea{border-style:dashed;border-color:var(--ink)}
+  .fld .fig{font-size:11px;color:var(--ink-3);font-weight:300;white-space:pre-wrap}
+  .fld .fig b{font-weight:400;color:var(--warn)}
+  .fld .fig button{font-size:10px;padding:0 6px;margin-left:6px;border-color:var(--rule-soft)}
+  .apr .who{display:flex;flex-direction:column;gap:4px;font-size:12px}
+  .apr .p{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+  .apr .p .t{color:var(--ink-3);font-size:11px;font-weight:300}
+  .apr .stale{color:var(--warn)}
+  .apr .none{color:var(--ink-3);font-weight:300}
+  .cmt{display:flex;flex-direction:column;gap:6px}
+  .cmt .list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow:auto}
+  .cmt .c{border-left:2px solid var(--rule-soft);padding:2px 10px;font-size:12px}
+  .cmt .c .h{color:var(--ink-3);font-size:11px;font-weight:300}
+  .cmt .in{display:flex;gap:6px;align-items:flex-start}
+  .cmt .in select,.actbar select{background:var(--field);border:1px solid var(--rule-soft);padding:6px 4px;font-size:13px}
+  .faces button .cm{font-size:9px;margin-left:2px}
+  .cmt .in textarea{flex:1;background:var(--field);border:1px solid var(--rule-soft);padding:6px 8px;min-height:38px;resize:vertical;font-size:16px}
+  .note{font-size:11px;color:var(--ink-3);font-weight:300;line-height:1.7}
+  .badge{display:inline-block;border:1px solid currentColor;padding:0 6px;font-size:10px;line-height:1.6;margin-left:6px;vertical-align:middle}
+  .badge.warn{color:var(--warn)} .badge.ok{color:var(--ok)} .badge.err{color:var(--err)}
+  .okrow{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;min-height:22px;flex-wrap:wrap}
+  .okrow .st{font-weight:300;color:var(--ink-3)}
+  .okrow .st.ok{color:var(--ok)} .okrow .st.warn{color:var(--warn)} .okrow .st.stale{color:var(--warn)} .okrow .st.err{color:var(--err)}
+  .okrow .okitem{padding:2px 12px;font-size:12px;background:none;color:inherit;border-color:var(--ink);flex:none}
+  .okrow .btns{display:flex;gap:6px;flex:none}
+  .okrow .okitem.done{background:none;color:var(--ok);border-color:var(--ok)}
+  .okrow .stack{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .okrow .okitem.chk{background:none;color:inherit;border-color:var(--ink)}
+  .faces button .ok.half{color:var(--ink-3)}
+  .okrow .okitem.sub{background:none;color:inherit;border-color:var(--rule-soft);font-size:11px;padding:1px 8px}
+  .fld.s-synced textarea{border-color:var(--ok)}
+  .offline{border:1px solid var(--warn);color:var(--warn);padding:6px 10px;font-size:12px}
+
+  /* 操作バー：名前・役割・一時保存・OK を一列に */
+  .actbar{flex:none;border-top:1px solid var(--rule);background:var(--bar);padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .actbar .who{display:flex;align-items:center;gap:6px;flex:1;min-width:200px}
+  .actbar label{font-size:11px;color:var(--ink-2);white-space:nowrap}
+
+  .actbar .role{display:flex;border:1px solid var(--rule-soft)}
+  .actbar .role button{border:none;padding:4px 10px;font-size:12px}
+  .actbar .role button.on{background:var(--ink);color:var(--bg)}
+  .actbar .msg{flex-basis:100%;font-size:11px;color:var(--ink-3);font-weight:300;min-height:1.2em}
+  .actbar .msg.err{color:var(--err)} .actbar .msg.ok{color:var(--ok)}
+  .busy{pointer-events:none;opacity:.6}
+
+  @media (max-width:820px){
+    body{font-size:13px}
+    .map{max-height:120px}
+    .preview.tall{height:78vh}
+    header{padding:6px 12px;gap:8px;flex-wrap:wrap}
+    header .sub{display:none}
+    header h1{font-size:13px}
+    .status{flex-basis:auto}
+    main{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
+    .preview{border-right:none;border-bottom:1px solid var(--rule);height:34vh}
+    .stage{overflow-y:scroll;overflow-x:hidden;scrollbar-gutter:stable}
+    .preview.tall{height:62vh}
+    .ptools .expand{display:inline-block}
+    .flnote{display:none}
+    .editor{padding:10px 12px 16px}
+    .actbar{padding:8px 12px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+    .actbar .who{flex-basis:100%}
+    .actbar .role{margin-right:auto}
+  }
+  @media (min-width:821px){ .ptools .expand{display:none} }
+  @media (prefers-reduced-motion:no-preference){ .faces button,.fld textarea{transition:border-color .15s,background .15s} }
+</style>
+
+</head>
+<body>
+<header>
+  <div><h1>SCAJ2026 ロール文言レビュー</h1><div class="sub">修正・確認・コメントは自動で共有され、開いている全員にリアルタイム反映（ログイン不要）</div></div>
+  <nav class="faces" id="faces" aria-label="面の切り替え"></nav>
+  <div class="status" id="status">読み込み中</div>
+</header>
+
+<main>
+  <section class="preview" id="previewPane" aria-label="プレビュー">
+    <div class="ptools">
+      <span class="name" id="pname"></span>
+      <button id="zoomText" class="on" type="button">文字</button>
+      <button id="zoomPrint" type="button">什器まわり</button>
+      <button id="zoomAll" type="button">全体</button>
+      <button id="expandBtn" class="expand" type="button">拡大</button>
+      <button id="mapBtn" class="on" type="button">図面</button>
+    </div>
+    <div class="map" id="mapPane"><svg id="mapSvg" viewBox="-620 4500 7300 2400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="ブース平面図：面の位置"></svg></div>
+    <div class="stage" id="stage"><div class="scroller" id="scroller"><div class="frame" id="frame"></div></div><div class="flnote" id="flnote"></div></div>
+  </section>
+  <section class="edcol">
+    <div class="editor" id="editor" aria-label="文言の編集"></div>
+    <div class="actbar" id="actbar">
+      <div class="who">
+        <label for="myname">名前</label><select id="myname"><option>専務</option><option>荻野</option><option>スタッフ</option></select>
+        
+      </div>
+      <button type="button" id="saveBtn" class="primary">保存</button>
+      <button type="button" id="exportBtn" title="Figma 反映用に、保存済みの文言・確認・コメントをテキストでコピー">Figma 反映用にコピー</button>
+      
+      <div class="msg" id="actmsg"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ===== Figma から読み込んだ面データ（ページ「ロール両面 展開」43:2） ===== */
+const FIGMA_FILE_KEY = 'ZAEBPIKTF8IUYxjwAgXvBv';
+const FRAME_BG = '#edede8';
+const RECTS = {
+  roll: [
+    ['r',0,0,600,1300,null,1.5,'天井看板'],
+    ['r',0,1300,600,200,null,1.5,'梁'],
+    ['r',0,1200,600,1580,'roll',2,'ロール 立ち上がり'],
+    ['r',0,2780,600,320,'roll',1.5,'ロール カール'],
+    ['e',250,1200,100,100,null,1.5,'ロッド'],
+    ['r',0,3100,600,780,null,2,'展示台'],
+    ['r',0,3880,600,120,'stage',1,'ステージ'],
+    ['r',12,1800,576,800,null,1,'印刷範囲'],
+    ['l',0,2200,600,0,null,1,'アイライン FL1800'],
+    ['r',60,2900,120,200,null,1.5,'展示物'],
+    ['r',220,2940,160,160,null,1.5,'展示物'],
+  ],
+  outer: [
+    ['r',0,0,600,1300,null,1.5,'天井看板'],
+    ['r',0,1300,600,200,null,1.5,'梁'],
+    ['r',0,1200,600,2530,'roll',2,'ロール 端の垂れ'],
+    ['e',250,1200,100,100,null,1.5,'ロッド'],
+    ['r',0,3880,600,120,'stage',1,'ステージ'],
+    ['r',12,1800,576,800,null,1,'印刷範囲'],
+    ['l',0,2200,600,0,null,1,'アイライン FL1800'],
+  ],
+  disp: [
+    ['r',0,3100,600,780,null,2,'展示台'],
+    ['r',0,3880,600,120,'stage',1,'ステージ'],
+    ['r',120,2885,140,200,null,1.5,'展示物 1'],
+    ['r',330,2925,170,160,null,1.5,'展示物 2'],
+  ],
+  island: [
+    ['r',0,380,600,900,null,2,'独立棚'],
+    ['r',0,1280,600,120,'stage',1,'ステージ'],
+    ['r',5,235,590,145,null,1.5,'アクリルケース'],
+    ['r',10,315,580,65,'soil',0,'土'],
+    ['r',250,268,62,70,'bag',1,'袋 未分解'],
+    ['r',338,283,62,55,'bag',1,'袋 12h'],
+    ['r',426,298,62,40,'bag',1,'袋 24h'],
+    ['r',514,320,62,18,'bag',1,'袋 土へ'],
+  ],
+};
+// text: [nodeId, レイヤー名, x, y, w, font(sans|serif|hand), weight, size, lineHeight%('auto'), align, color, 印刷される文言か, 文字列]
+const FACES = [
+  {no:'1', id:'16:2', kind:'outer', w:600, h:4000, name:'一番左の外側ロール（左から来る人に向く面）｜紙は、森から来ている。', texts:[
+    ['16:11','ラベル',45,2110,510,'sans',300,16,170,'left','#1a1a1a',true,'GEOPACK STORY 00｜はじまり'],
+    ['16:12','キャッチコピー（横組み）',45,2157,510,'serif',500,44,140,'left','#1a1a1a',true,'紙は、森から来ている。'],
+    ['34:32','見出し（横組み）',45,2243,510,'sans',400,24,140,'left','#1a1a1a',true,'ジオパックは長年、紙と向き合ってきました。'],
+    ['16:13','説明（横組み）',45,2307,510,'sans',300,24,170,'left','#1a1a1a',true,'長年、紙と向き合ってきた会社が、\nコーヒーの袋を紙でつくる理由。\n人から人へ物が渡るとき、\n包材は必ずそこにある。\nだから、できるだけ環境に影響の少ない\nものにしたい。\n紙にできることを、増やしていく。'],
+    ['16:10','無地',270,1400,100,'sans',300,16,'auto','left','#1a1a1a',false,'無地'],
+  ]},
+  {no:'2', id:'3:2', kind:'roll', w:600, h:4000, name:'F 左ロール（Fに向く面）｜はたらく袋', texts:[
+    ['11:7','キャッチコピー（縦組み）',30,2013,200,'serif',500,180,104,'center','#1a1a1a',true,'守\nる'],
+    ['11:6','ラベル',255,2071,310,'sans',400,16,130,'left','#1a1a1a',true,'はたらく袋 01｜守る'],
+    ['11:8','見出し（横組み）',255,2102,310,'serif',400,30,140,'left','#1a1a1a',true,'紙なのに、ここまで守れる。'],
+    ['11:9','説明（横組み）',255,2206,310,'sans',400,18,170,'left','#1a1a1a',true,'香りを逃がさない。湿気と酸素を近づけない。アルミを使わない紙のパッケージが、焙煎したての香りを、届く日まで守ります。'],
+    ['3:14','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜TG-X3 実物／バリア数値パネル'],
+  ]},
+  {no:'3', id:'32:2', kind:'disp', w:600, h:4000, name:'什器 F｜正面（通路側から見る）台の上の展示物のみ', texts:[
+    ['32:12','展示物ラベル',20,2820,560,'sans',400,18,'auto','center','#1a1a1a',false,'TG-X3 実物／バリア数値パネル'],
+    ['32:16','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜TG-X3 実物／バリア数値パネル（H約200〜215）'],
+  ]},
+  {no:'4', id:'2:2', kind:'roll', w:600, h:4000, name:'F 右ロール（Fに向く面）｜ジオパックストーリー', texts:[
+    ['11:3','キャッチコピー（横組み）',45,1971,510,'serif',500,180,100,'right','#1a1a1a',true,'守る'],
+    ['11:2','ラベル',45,2181,510,'sans',400,16,130,'left','#1a1a1a',true,'GEOPACK STORY 01｜守る'],
+    ['11:4','見出し（横組み）',45,2212,510,'serif',400,30,140,'left','#1a1a1a',true,'自然由来の素材で、しっかり守る。'],
+    ['11:5','説明（横組み）',45,2274,510,'sans',400,18,170,'left','#1a1a1a',true,'自然由来の素材をメインに使いながら、お客様がこだわった商品をしっかり守る袋にしたい。その想いから生まれたのが、アルミを使わずに香りを守る高バリア紙 TG-X3。長年、紙と向き合ってきた会社の答えです。'],
+    ['2:14','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜TG-X3 実物／バリア数値パネル'],
+  ]},
+  {no:'5', id:'3:34', kind:'roll', w:600, h:4000, name:'G 左ロール（Gに向く面）｜はたらく袋', texts:[
+    ['11:15','キャッチコピー（縦組み）',30,2013,200,'serif',500,180,104,'center','#1a1a1a',true,'届\nく'],
+    ['11:14','ラベル',255,2071,310,'sans',400,16,130,'left','#1a1a1a',true,'はたらく袋 02｜届く'],
+    ['11:16','見出し（横組み）',255,2102,310,'serif',400,30,140,'left','#1a1a1a',true,'届くまで、責任を持てる。'],
+    ['11:17','説明（横組み）',255,2206,310,'sans',400,18,170,'left','#1a1a1a',true,'ポストに入る厚み。自立して立つ底。豆を詰めた袋が、そのまま郵便受けまで届く。再配達も、送料も、CO2も減らします。'],
+    ['3:46','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜GeoPosting Pack 各サイズ／模擬ポスト／厚み計測ゲージ'],
+  ]},
+  {no:'6', id:'32:17', kind:'disp', w:600, h:4000, name:'什器 G｜正面（通路側から見る）台の上の展示物のみ', texts:[
+    ['32:27','展示物ラベル',20,2820,560,'sans',400,18,'auto','center','#1a1a1a',false,'GeoPosting Pack 各サイズ／模擬ポスト／厚み計測ゲージ'],
+    ['32:31','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜GeoPosting Pack 各サイズ／模擬ポスト／厚み計測ゲージ（H約200〜215）'],
+  ]},
+  {no:'7', id:'3:18', kind:'roll', w:600, h:4000, name:'G 右ロール（Gに向く面）｜ジオパックストーリー', texts:[
+    ['11:11','キャッチコピー（横組み）',45,1987,510,'serif',500,180,100,'right','#1a1a1a',true,'届く'],
+    ['11:10','ラベル',45,2197,510,'sans',400,16,130,'left','#1a1a1a',true,'GEOPACK STORY 02｜届く'],
+    ['11:12','見出し（横組み）',45,2228,510,'serif',400,30,140,'left','#1a1a1a',true,'届き方まで、設計する。'],
+    ['11:13','説明（横組み）',45,2290,510,'sans',400,18,170,'left','#1a1a1a',true,'袋の仕事は、詰めたら終わりではありません。ポストに入る厚み、自立する底、開けやすさ。届く場面を思い浮かべながら寸法を決め、投函テストを重ねる。「包材を進化させる会社」として、届き方から袋をつくっています。'],
+    ['3:30','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜GeoPosting Pack 各サイズ／模擬ポスト／厚み計測ゲージ'],
+  ]},
+  {no:'8', id:'3:66', kind:'roll', w:600, h:4000, name:'H 左ロール（Hに向く面）｜はたらく袋', texts:[
+    ['11:23','キャッチコピー（縦組み）',30,1920,200,'serif',500,180,104,'center','#1a1a1a',true,'伝\nえ\nる'],
+    ['11:22','ラベル',255,2071,310,'sans',400,16,130,'left','#1a1a1a',true,'はたらく袋 03｜伝える'],
+    ['11:24','見出し（横組み）',255,2102,310,'serif',400,30,140,'left','#1a1a1a',true,'手触りを、よく確かめる。'],
+    ['11:25','説明（横組み）',255,2206,310,'sans',400,18,170,'left','#1a1a1a',true,'マットな質感、やわらかな色、手にしたときの温度。紙の表情が、豆のキャラクターと、ブランドの姿勢を伝えます。'],
+    ['3:78','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜紙見本帳／素材別サンプル／同一デザインを紙違いで'],
+  ]},
+  {no:'9', id:'32:32', kind:'disp', w:600, h:4000, name:'什器 H｜正面（通路側から見る）台の上の展示物のみ', texts:[
+    ['32:42','展示物ラベル',20,2820,560,'sans',400,18,'auto','center','#1a1a1a',false,'紙見本帳／素材別サンプル'],
+    ['32:46','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜紙見本帳／素材別サンプル（H約200〜215）'],
+  ]},
+  {no:'10', id:'3:50', kind:'roll', w:600, h:4000, name:'H 右ロール（Hに向く面）｜ジオパックストーリー', texts:[
+    ['11:19','キャッチコピー（横組み）',30,1987,540,'serif',500,180,100,'right','#1a1a1a',true,'伝える'],
+    ['11:18','ラベル',45,2197,510,'sans',400,16,130,'left','#1a1a1a',true,'GEOPACK STORY 03｜伝える'],
+    ['11:20','見出し（横組み）',45,2228,510,'serif',400,30,140,'left','#1a1a1a',true,'紙の表情を、そのまま渡す。'],
+    ['11:21','説明（横組み）',45,2290,510,'sans',400,18,170,'left','#1a1a1a',true,'紙には、素材ごとに表情があります。その魅力を殺さないように、水性インキの表刷りデジタル印刷を選びました。必要な分だけ刷るから、つくりすぎない。日本の自社工場で、紙の可能性を最大限に引き出す——それが私たちのこだわりです。'],
+    ['3:62','展示メモ',16,3120,568,'sans',300,16,'auto','left','#1a1a1a',false,'展示｜紙見本帳／素材別サンプル／同一デザインを紙違いで'],
+  ]},
+  {no:'11', id:'16:14', kind:'outer', w:600, h:4000, name:'一番右の外側ロール（右から来る人・入口側に向く面）｜姿勢', texts:[
+    ['16:23','ラベル',45,1862,510,'hand',400,24,'auto','left','#1a1a1a',true,'GeoPosting Pack'],
+    ['16:24','キャッチコピー（横組み）',45,1900,510,'serif',500,64,140,'left','#1a1a1a',true,'包み方で、\nブランドの\n姿勢を示す。'],
+    ['16:25','説明（横組み）',45,2230,510,'sans',400,24,170,'left','#1a1a1a',true,'産地を選び、焙煎を決め、抽出を整える。\nそこまで手をかけたコーヒーを、\n最後に何で包むか。\nパッケージは中身を守る道具であると同時に、ブランドが何を大事にしているかを\n静かに語る存在です。'],
+    ['16:22','無地',270,1400,100,'sans',300,16,'auto','left','#1a1a1a',false,'無地'],
+  ]},
+  {no:'21', id:'11:26', kind:'island', w:600, h:1400, name:'アイランド 右下（アクリルケース・土と分解途中の袋）｜つなぐ — もぐくる（18）と一対', texts:[
+    ['11:39','キャッチコピー つなぐ（白・横組み）',22,317,220,'serif',500,30,105,'left','#ffffff',true,'つなぐ'],
+    ['11:40','説明（白・横組み）',22,352,556,'sans',400,9.5,150,'left','#ffffff',true,'使い終えた袋を、次の資源へ。回収 → 選別 → 堆肥化・再資源化。包むだけじゃない、循環する価値を創る。'],
+    ['11:32','段階 未分解',250,242,80,'sans',300,10,'auto','left','#1a1a1a',false,'未分解'],
+    ['11:34','段階 12h',338,242,80,'sans',300,10,'auto','left','#1a1a1a',false,'12h'],
+    ['11:36','段階 24h',426,242,80,'sans',300,10,'auto','left','#1a1a1a',false,'24h'],
+    ['11:38','段階 土へ',514,242,80,'sans',300,10,'auto','left','#1a1a1a',false,'土へ'],
+    ['11:41','メモ',16,410,568,'sans',300,13,150,'left','#1a1a1a',false,'ロールなし。600角の台の上にアクリル什器。中は堆肥化できる袋が土に還っていく様子。文字はケース下部の土と重なる帯に白・横組み。'],
+  ]},
+];
+const CROP = { text:{ roll:[1900,2620], outer:[1840,2620], disp:[2700,3300], island:[225,395] }, print:{ roll:[1150,3250], outer:[1150,3960], disp:[2700,4000], island:[210,810] } };
+const FONT = { sans:'"Noto Sans JP",sans-serif', serif:'"Noto Serif JP",serif', hand:'"Segoe Script","Bradley Hand",cursive' };
+
+/* ===== 状態 ===== */
+const $ = (s, el=document) => el.querySelector(s);
+const state = {
+  cur: '2', zoom: 'text', role: 'staff', myname: '',
+  docs: {},        // faces/{no}      → {texts, updatedAt, updatedBy, comments, log}
+  approvals: {},   // approvals/{no}  → {items:{nodeId:{ok, by, at, text, figma, error, syncedAt}}}
+  baseline: null,  // meta/baseline   → {texts:{nodeId:string}} Figma に最後に反映した文言
+  local: {},       // 未保存の編集 {no:{nodeId:text}}
+  db: null, focusId: null, pendingRender: false, busy: false,
+};
+try { const n = localStorage.getItem('scaj_myname'); state.myname = ['専務','荻野','スタッフ'].includes(n) ? n : '専務'; } catch(e){ state.myname = '専務'; }
+try { const r = localStorage.getItem('scaj_role'); state.role = ['exec','ogino'].includes(r) ? r : 'staff'; } catch(e){}
+try { const z = localStorage.getItem('scaj_zoom'); if (z && ['text','print','all'].includes(z)) state.zoom = z; } catch(e){}
+try { const f = localStorage.getItem('scaj_face'); if (f && FACES.some(x=>x.no===f)) state.cur = f; } catch(e){}
+try { const l = JSON.parse(localStorage.getItem('scaj_local') || '{}'); if (l && typeof l === 'object') state.local = l; } catch(e){}
+
+const faceOf = no => FACES.find(f => f.no === no);
+const figmaText = (face, id) => face.texts.find(t => t[0] === id)[12];
+const baseText = (face, id) => (state.baseline && state.baseline.texts && state.baseline.texts[id] != null) ? state.baseline.texts[id] : figmaText(face, id);
+const savedText = (face, id) => { const d = state.docs[face.no]; return (d && d.texts && d.texts[id] != null) ? d.texts[id] : baseText(face, id); };
+const curText = (face, id) => { const l = state.local[face.no]; return (l && l[id] != null) ? l[id] : savedText(face, id); };
+const hasUnsaved = face => { const l = state.local[face.no]; return !!l && Object.keys(l).some(id => l[id] !== savedText(face, id)); };
+const hasDiff = face => face.texts.some(t => savedText(face, t[0]) !== baseText(face, t[0]));   // Figma に未反映
+const itemOf = (face, id) => { const a = state.approvals[face.no]; const it = a && a.items && a.items[id]; return (it && it.ok) ? it : null; };
+const itemStale = (face, id) => { const it = itemOf(face, id); return !!it && it.text !== savedText(face, id); };
+const itemState = (face, id) => { const it = itemOf(face, id); if (!it) return 'none'; if (itemStale(face, id)) return 'stale'; return it.figma === 'synced' ? 'synced' : (it.figma === 'error' ? 'error' : 'pending'); };
+const checkOf = (face, id) => { const a = state.approvals[face.no]; const c = a && a.checks && a.checks[id]; return (c && c.ok) ? c : null; };
+const checkState = (face, id) => { const c = checkOf(face, id); if (!c) return 'none'; return c.text !== savedText(face, id) ? 'stale' : 'ok'; };
+const printedIds = face => face.texts.filter(t => t[11]).map(t => t[0]);
+const faceAllChecked = face => { const ids = printedIds(face); return ids.length > 0 && ids.every(id => checkState(face, id) === 'ok'); };
+const faceAllOk = face => { const ids = printedIds(face); return ids.length > 0 && ids.every(id => ['synced','pending','error'].includes(itemState(face, id))); };
+const pendingItems = face => face.texts.map(t => t[0]).filter(id => ['pending','error'].includes(itemState(face, id)));
+const fmt = iso => { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return ''; return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const saveLocal = () => { try { localStorage.setItem('scaj_local', JSON.stringify(state.local)); } catch(e){} };
+const isNarrow = () => window.innerWidth <= 820;
+const k = id => id.replace(':','_');
+const whoName = () => state.myname || '専務';
+
+/* ===== 面セレクタ ===== */
+function facesSig(){ return FACES.map(f => [f.no === state.cur ? 1 : 0, faceAllOk(f) ? 1 : 0, faceAllChecked(f) ? 1 : 0, (hasDiff(f) || hasUnsaved(f)) ? 1 : 0, (state.docs[f.no] && state.docs[f.no].comments && state.docs[f.no].comments.length) ? 1 : 0].join('')).join(','); }
+function renderFaces(){
+  const sig = facesSig(); if (renderFaces.last === sig) return; renderFaces.last = sig;
+  const nav = $('#faces'); nav.innerHTML = '';
+  FACES.forEach((f, i) => {
+    if (f.kind === 'island' && i > 0 && FACES[i-1].kind !== 'island') { const s = document.createElement('span'); s.className='sep'; nav.appendChild(s); }
+    const b = document.createElement('button'); b.type='button'; b.textContent = f.no; b.title = f.name;
+    if (f.no === state.cur) b.classList.add('on');
+    if (faceAllOk(f)) { const ok = document.createElement('span'); ok.className='ok'; ok.textContent = '✓'; ok.title='専務 確認済'; b.appendChild(ok); }
+    else if (faceAllChecked(f)) { const ok = document.createElement('span'); ok.className='ok half'; ok.textContent = '✓'; ok.title='荻野 確認済'; b.appendChild(ok); }
+    if (hasDiff(f) || hasUnsaved(f)) { const c = document.createElement('span'); c.className='chg'; c.title = hasUnsaved(f) ? '未保存の編集あり' : 'Figma に未反映の変更あり'; b.appendChild(c); }
+    { const d = state.docs[f.no]; if (d && d.comments && d.comments.length) { const c = document.createElement('span'); c.className='cm'; c.textContent = '💬'; c.title='コメントあり'; b.appendChild(c); } }
+    b.addEventListener('click', () => selectFace(f.no));
+    nav.appendChild(b);
+  });
+  const on = nav.querySelector('button.on'); if (on && on.scrollIntoView) on.scrollIntoView({block:'nearest', inline:'nearest'});
+  if (typeof renderMap === 'function' && $('#mapSvg') && $('#mapSvg').childNodes.length) renderMap();
+}
+function selectFace(no){ state.cur = no; state.focusId = null; try{ localStorage.setItem('scaj_face', no); }catch(e){}; renderAll(); $('#editor').scrollTop = 0; }
+
+/* ===== プレビュー ===== */
+function previewSig(face){ return [face.no, state.focusId, face.texts.map(x => curText(face, x[0])).join('\u0001')].join('|'); }
+function renderPreview(){
+  const face = faceOf(state.cur);
+  const psig = previewSig(face); if (renderPreview.last === psig) { fitPreview(); return; } renderPreview.last = psig;
+  const fr = $('#frame'); fr.innerHTML = '';
+  fr.style.width = face.w + 'px'; fr.style.height = face.h + 'px'; fr.style.background = FRAME_BG;
+  const fillOf = kk => ({ roll:'var(--roll)', stage:'var(--stage)', soil:'var(--soil)', bag:'var(--bag)' })[kk] || 'transparent';
+  for (const r of RECTS[face.kind]) {
+    const [kind,x,y,w,h,fill,sw,name] = r;
+    const el = document.createElement('div'); el.className='r'; el.title = name;
+    el.style.left = x+'px'; el.style.top = y+'px'; el.style.width = w+'px';
+    el.style.height = (kind==='l' ? 0 : h) + 'px';
+    el.style.background = fillOf(fill);
+    if (kind === 'e') el.style.borderRadius = '50%';
+    if (kind === 'l') { el.style.borderTopWidth = sw+'px'; } else { el.style.borderWidth = sw+'px'; }
+    if (name === '印刷範囲') { el.style.borderStyle = 'dashed'; el.style.opacity = .5; }
+    fr.appendChild(el);
+  }
+  for (const t of face.texts) {
+    const [id,name,x,y,w,font,weight,size,lh,align,color] = t;
+    const el = document.createElement('p'); el.className = 't'; el.dataset.id = id; el.title = name;
+    el.style.left = x+'px'; el.style.top = y+'px'; el.style.width = w+'px';
+    el.style.fontFamily = FONT[font]; el.style.fontWeight = weight; el.style.fontSize = size+'px';
+    el.style.lineHeight = (lh === 'auto') ? '1.45' : (lh/100).toString();
+    el.style.textAlign = align; el.style.color = color;
+    el.textContent = curText(face, id);
+    if (state.focusId === id) el.classList.add('hl');
+    el.addEventListener('click', () => { const ta = document.getElementById('ta-' + k(id)); if (ta) { ta.focus(); ta.scrollIntoView({block:'center', behavior:'smooth'}); } });
+    fr.appendChild(el);
+  }
+  $('#pname').textContent = `${face.no}｜${face.name}`;
+  ['text','print','all'].forEach(z => $('#zoom' + z[0].toUpperCase() + z.slice(1)).classList.toggle('on', state.zoom === z));
+  $('#zoomPrint').textContent = face.kind === 'island' ? '600角' : '什器まわり';
+  fitPreview();
+}
+function fitPreview(){
+  const face = faceOf(state.cur); const st = $('#stage'); const sc = $('#scroller'); const fr = $('#frame');
+  const rc = st.getBoundingClientRect(); const W = Math.floor(st.clientWidth) - 1, H = Math.floor(Math.min(rc.height, st.clientHeight)) - 1; if (W < 10 || H < 10) return;
+  const sig = [face.no, state.zoom, W, H, isNarrow()].join('|'); if (fitPreview.last === sig) return; fitPreview.last = sig;
+  let y0 = 0, y1 = face.h;
+  if (CROP[state.zoom]) { [y0, y1] = CROP[state.zoom][face.kind]; }
+  let s = Math.min(W / face.w, H / (y1 - y0));
+  if (isNarrow() && state.zoom !== 'all') s = W / face.w;   // スマホは幅いっぱい・範囲内を上下スクロール
+  const ch = (y1 - y0) * s;
+  sc.style.width = W + 'px'; sc.style.height = (isNarrow() && state.zoom !== 'all' ? Math.max(ch, H) : H) + 'px';
+  fr.style.transform = `scale(${s})`;
+  fr.style.left = Math.max(0, (W - face.w*s)/2) + 'px';
+  fr.style.top = (-y0*s + Math.max(0, (H - ch)/2)) + 'px';
+  $('#flnote').textContent = (face.kind === 'island' ? 'アイランド 600角' : 'ロール幅 600・FL = 通路床基準') + `　1px = 1mm　縮尺 ${(s*100).toFixed(0)}%`;
+}
+new ResizeObserver(fitPreview).observe($('#stage'));
+[['zoomText','text'],['zoomPrint','print'],['zoomAll','all']].forEach(([id,z]) => $('#'+id).addEventListener('click', () => { state.zoom = z; try{localStorage.setItem('scaj_zoom', z)}catch(e){}; renderPreview(); }));
+$('#expandBtn').addEventListener('click', () => { const p = $('#previewPane'); p.classList.toggle('tall'); $('#expandBtn').textContent = p.classList.contains('tall') ? '縮小' : '拡大'; });
+
+/* ===== エディタ ===== */
+function editorSig(){ const no = state.cur; return JSON.stringify([no, state.docs[no] || null, state.approvals[no] || null, state.baseline || null, state.local[no] || null, state.myname, state.db ? 1 : 0, state.busy ? 1 : 0]); }
+function renderEditor(){
+  const face = faceOf(state.cur); const ed = $('#editor');
+  renderEditor.last = editorSig();
+  const doc = state.docs[face.no] || {};
+  const printed = face.texts.filter(t => t[11]); const memos = face.texts.filter(t => !t[11]);
+  const unsaved = hasUnsaved(face); const diff = hasDiff(face); const pend = pendingItems(face);
+  const ids = printedIds(face); const okCount = ids.filter(id => ['synced','pending','error'].includes(itemState(face, id))).length;
+  let badges = '';
+  if (unsaved) badges += '<span class="badge warn">未保存</span>';
+  const chkCount = ids.filter(id => checkState(face, id) === 'ok').length;
+  if (ids.length) badges += `<span class="badge ${chkCount === ids.length ? 'ok' : ''}">荻野 確認 ${chkCount}／${ids.length}</span><span class="badge ${okCount === ids.length ? 'ok' : ''}">専務 確認 ${okCount}／${ids.length}</span>`;
+  if (diff) badges += '<span class="badge warn">Figma に未反映</span>';
+  else badges += '<span class="badge ok">Figma と同じ</span>';
+  let html = `<h2>面 ${face.no}｜${esc(face.name)}${badges}<small>Figma フレーム ${face.id}${doc.updatedAt ? `　保存 ${fmt(doc.updatedAt)}${doc.updatedBy ? '（'+esc(doc.updatedBy)+'さん）' : ''}` : ''}</small></h2>`;
+  if (!state.db) html += `<div class="offline">保存先（Firebase）に接続していません。firebase-config.js の設定を確認してください。編集内容はこの端末だけに残ります。</div>`;
+  const log = doc.log || [];
+  const fld = (t, memo) => {
+    const [id,name,,,w,font,,size] = t;
+    const v = curText(face, id); const b = baseText(face, id); const sv = savedText(face, id);
+    const changed = sv !== b; const dirty = v !== sv; const big = size >= 30;
+    const it = itemOf(face, id); const stt = itemState(face, id);
+    const last = [...log].reverse().find(e => e.id === id);
+    const ck = checkOf(face, id); const cst = checkState(face, id);
+    let ckrow = cst === 'none' ? `<span class="st none">荻野 確認なし</span>` : cst === 'stale' ? `<span class="st stale">確認後に変更あり（荻野 ${fmt(ck.at)} の確認は「${esc(ck.text)}」）</span>` : `<span class="st ok">荻野 確認 ${fmt(ck.at)}</span>`;
+    let okrow = '';
+    if (stt === 'none') okrow = `<span class="st none">専務 確認なし</span>`;
+    else if (stt === 'stale') okrow = `<span class="st stale">確認後に変更あり（専務 ${fmt(it.at)} の確認は「${esc(it.text)}」）</span>`;
+    else if (stt === 'synced') okrow = `<span class="st ok">専務 確認 ${fmt(it.at)}　Figma 反映済 ${fmt(it.syncedAt)}</span>`;
+    else if (stt === 'error') okrow = `<span class="st ok">専務 確認 ${fmt(it.at)}</span>`;
+    else okrow = `<span class="st ok">専務 確認 ${fmt(it.at)}</span>`;
+    const can = state.db && !state.busy;
+    const ckBtn = (cst === 'none' || cst === 'stale')
+      ? `<button type="button" class="okitem chk" data-chk="${id}" ${can ? '' : 'disabled'}>荻野 ${cst === 'stale' ? '再確認' : '確認'}</button>`
+      : `<button type="button" class="okitem chk done" data-unchk="${id}" ${state.db && !state.busy ? '' : 'disabled'} title="押すと確認を取り消します">荻野 ✓</button>`;
+    const okBtn = (stt === 'none' || stt === 'stale')
+      ? `<button type="button" class="okitem" data-ok="${id}" ${can ? '' : 'disabled'}>専務 ${stt === 'stale' ? '再確認' : '確認'}</button>`
+      : `<button type="button" class="okitem done" data-unok="${id}" ${state.db && !state.busy ? '' : 'disabled'} title="押すと確認を取り消します">専務 ✓</button>`;
+    const okbtn = `<span class="btns">${ckBtn}${okBtn}</span>`;
+    return `<div class="fld${changed ? ' diff' : ''}${dirty ? ' unsaved' : ''} s-${stt}">
+      <div class="lab"><span>${esc(name)}${dirty ? '<span class="badge warn">未保存</span>' : ''}</span><span class="meta">${font==='serif'?'明朝':font==='hand'?'手書き体':'ゴシック'} ${size}px／幅 ${w}　<span id="cnt-${k(id)}">${v.replace(/\n/g,'').length}</span> 字</span></div>
+      <textarea id="ta-${k(id)}" data-id="${id}" rows="${Math.max(1, Math.min(8, v.split('\n').length + (v.length > 40 ? 2 : 0)))}" class="${big?'big':''}" spellcheck="false">${esc(v)}</textarea>
+      ${memo ? '' : `<div class="okrow"><span class="stack">${ckrow}${okrow}</span>${okbtn}</div>`}
+      ${changed ? `<div class="fig">Figma 現在：<b>${esc(b)}</b><button type="button" data-revert="${id}">Figma の文言に戻す</button></div>` : ''}
+      ${last && last.from !== undefined ? `<div class="fig">変更：${esc(last.by)}さん ${fmt(last.at)}　前「${esc(last.from)}」</div>` : ''}
+    </div>`;
+  };
+  html += `<div class="grp"><div class="gl">印刷される文言</div>${printed.length ? printed.map(fld).join('') : '<div class="note">この面のロールは無地刷り。文字は札・現物で見せる（下のメモを参照）。</div>'}</div>`;
+  if (memos.length) html += `<details class="grp memo"><summary class="gl">Figma 上のメモ（印刷されない注記：展示物の内容・無地範囲の目印）— 開く</summary><div class="note">ロール本体には印刷されない、図面用の注記です。確認ボタンは付けていません。</div>${memos.map(t => fld(t, true)).join('')}</details>`;
+
+  const cs = (doc.comments || []);
+  html += `<div class="grp cmt"><div class="gl">この面へのコメント（「もっと短く」など）</div>
+    <div class="list">${cs.length ? cs.map(c => `<div class="c"><div class="h">${esc(c.by)}　${fmt(c.at)}</div><div>${esc(c.text)}</div></div>`).join('') : '<span class="note">コメントはまだありません</span>'}</div>
+    <div class="in"><textarea id="cmtIn" placeholder="例：説明文をもう 2 行短く" ${state.db ? '' : 'disabled'}></textarea><button type="button" id="cmtBtn" ${state.db ? '' : 'disabled'}>追加</button></div>
+  </div>`;
+  html += `<div class="note">編集したら下の「保存」で全員に共有されます（保存前は点線枠）。橙の枠は Figma に未反映の文言。各文言の右の「荻野 確認」「専務 確認」はボタンを押すだけで記録されます（未保存の編集があれば自動で保存してから記録）。確認後に文言が変わった欄は再確認が必要です。Figma への反映は Claude が別途行います。<br>← → キーで面を切り替え。プレビューの文字をタップすると該当欄に移動します。</div>`;
+  ed.innerHTML = html;
+
+  ed.querySelectorAll('textarea[data-id]').forEach(ta => {
+    ta.addEventListener('input', () => onEdit(face, ta.dataset.id, ta.value));
+    ta.addEventListener('focus', () => { state.focusId = ta.dataset.id; renderPreview(); });
+  });
+  ed.querySelectorAll('button[data-revert]').forEach(b => b.addEventListener('click', () => { const id = b.dataset.revert; onEdit(face, id, baseText(face, id)); renderEditor(); }));
+  ed.querySelectorAll('button[data-ok]').forEach(b => b.addEventListener('click', () => approveItem(face, b.dataset.ok)));
+  ed.querySelectorAll('button[data-chk]').forEach(b => b.addEventListener('click', () => checkItem(face, b.dataset.chk)));
+  ed.querySelectorAll('button[data-unchk]').forEach(b => b.addEventListener('click', () => uncheckItem(face, b.dataset.unchk)));
+  ed.querySelectorAll('button[data-unok]').forEach(b => b.addEventListener('click', () => unapproveItem(face, b.dataset.unok)));
+  const cb = $('#cmtBtn'); if (cb) cb.addEventListener('click', () => addComment(face));
+  renderActbar();
+}
+function onEdit(face, id, value){
+  if (!state.local[face.no]) state.local[face.no] = {};
+  if (value === savedText(face, id)) delete state.local[face.no][id]; else state.local[face.no][id] = value;
+  if (!Object.keys(state.local[face.no]).length) delete state.local[face.no];
+  saveLocal();
+  const p = $(`#frame .t[data-id="${id}"]`); if (p) p.textContent = value;
+  const c = document.getElementById('cnt-'+k(id)); if (c) c.textContent = value.replace(/\n/g,'').length;
+  const ta = document.getElementById('ta-'+k(id));
+  if (ta) { const f = ta.closest('.fld'); f.classList.toggle('unsaved', value !== savedText(face, id)); f.classList.toggle('diff', value !== baseText(face, id)); }
+  renderActbar(); renderFaces();
+}
+
+/* ===== 操作バー ===== */
+function renderActbar(){
+  const face = faceOf(state.cur); const unsaved = hasUnsaved(face);
+  const save = $('#saveBtn'); save.disabled = !(state.db && unsaved) || state.busy;
+  save.textContent = unsaved ? '保存' : '保存済み';
+}
+function setMsg(text, kind){ const m = $('#actmsg'); m.textContent = text || ''; m.className = 'msg' + (kind ? ' ' + kind : ''); }
+function setStatus(s){ $('#status').textContent = s; }
+async function writeDoc(ref, body){ try { await ref.update(body); } catch (e) { if (e && e.code === 'invalid_argument') await ref.set(body); else throw e; } }
+
+async function saveDraft(face){
+  if (!state.db) { setMsg('共有保存に接続していません', 'err'); return false; }
+  const l = state.local[face.no]; if (!l) return true;
+  const texts = {}; const now = new Date().toISOString(); const entries = [];
+  for (const t of face.texts) { const id = t[0]; if (l[id] != null && l[id] !== savedText(face, id)) { texts[id] = l[id]; entries.push({ at: now, by: whoName(), id, from: savedText(face, id), to: l[id] }); } }
+  if (!entries.length) { delete state.local[face.no]; saveLocal(); return true; }
+  const d = state.docs[face.no] || {};
+  const log = (d.log || []).concat(entries).slice(-120);
+  const body = { texts, updatedAt: now, updatedBy: whoName(), log };
+  try {
+    await writeDoc(state.db.doc('faces/' + face.no), body);
+    state.docs[face.no] = Object.assign({}, d, { texts: Object.assign({}, d.texts || {}, texts), updatedAt: now, updatedBy: whoName(), log });
+    delete state.local[face.no]; saveLocal();
+    setMsg('保存しました ' + fmt(now), 'ok'); return true;
+  } catch (e) { setMsg((e && e.code === 'invalid_argument') ? '保存できませんでした。このアカウントには書き込み権限がありません（閲覧のみ）。' : '保存できませんでした（' + ((e && e.code) || '') + '）', 'err'); return false; }
+}
+
+/* ===== 専務 確認（文言ごと） ===== */
+async function approveItem(face, id){
+  if (state.busy) return;
+  if (!state.db) { setMsg('共有保存に接続していません', 'err'); return; }
+  state.busy = true; renderActbar(); $('#actbar').classList.add('busy');
+  try {
+    if (hasUnsaved(face)) { const ok = await saveDraft(face); if (!ok) return; }
+    const rec = { ok: true, by: '専務', at: new Date().toISOString(), text: savedText(face, id), figma: 'pending', error: '', syncedAt: '' };
+    const aref = state.db.doc('approvals/' + face.no);
+    try { await writeDoc(aref, { items: { [id]: rec } }); }
+    catch (e) {
+      setMsg((e && e.code === 'invalid_argument') ? '確認を記録できませんでした。このページの編集権限が必要です。' : '確認を記録できませんでした（' + ((e && e.code) || '') + '）', 'err');
+      return;
+    }
+    const a = state.approvals[face.no] || {}; a.items = Object.assign({}, a.items || {}, { [id]: rec }); state.approvals[face.no] = a;
+    setMsg('専務 確認を記録しました', 'ok');
+  } finally { state.busy = false; $('#actbar').classList.remove('busy'); renderFaces(); renderEditor(); }
+}
+async function checkItem(face, id){
+  if (state.busy) return;
+  if (!state.db) { setMsg('共有保存に接続していません', 'err'); return; }
+  state.busy = true; renderActbar(); $('#actbar').classList.add('busy');
+  try {
+    if (hasUnsaved(face)) { const ok = await saveDraft(face); if (!ok) return; }
+    const rec = { ok: true, by: '荻野', at: new Date().toISOString(), text: savedText(face, id) };
+    try { await writeDoc(state.db.doc('approvals/' + face.no), { checks: { [id]: rec } }); }
+    catch (e) { setMsg((e && e.code === 'invalid_argument') ? '確認を記録できませんでした。確認・OK はページの編集権限がある方のみ記録できます。' : '確認を記録できませんでした（' + ((e && e.code) || '') + '）', 'err'); return; }
+    const a = state.approvals[face.no] || {}; a.checks = Object.assign({}, a.checks || {}, { [id]: rec }); state.approvals[face.no] = a;
+    setMsg('荻野 確認を記録しました', 'ok');
+  } finally { state.busy = false; $('#actbar').classList.remove('busy'); renderFaces(); renderEditor(); }
+}
+async function uncheckItem(face, id){
+  if (!state.db || state.busy) return;
+  try {
+    await state.db.doc('approvals/' + face.no).update({ checks: { [id]: { ok: false } } });
+    const a = state.approvals[face.no]; if (a && a.checks && a.checks[id]) a.checks[id] = { ok: false };
+    setMsg('確認を取り消しました', 'ok'); renderFaces(); renderEditor();
+  } catch (e) { setMsg((e && e.code === 'invalid_argument') ? '取り消しは編集権限のある方のみ行えます' : '取り消せませんでした', 'err'); }
+}
+async function unapproveItem(face, id){
+  if (!state.db || state.busy) return;
+  try {
+    await state.db.doc('approvals/' + face.no).update({ items: { [id]: { ok: false } } });
+    const a = state.approvals[face.no]; if (a && a.items && a.items[id]) a.items[id] = { ok: false };
+    setMsg('確認を取り消しました', 'ok'); renderFaces(); renderEditor();
+  } catch (e) { setMsg((e && e.code === 'invalid_argument') ? '取り消しには編集権限が必要です' : '取り消せませんでした', 'err'); }
+}
+async function addComment(face){
+  const ta = $('#cmtIn'); const text = (ta.value || '').trim(); if (!text || !state.db) return;
+  const doc = state.docs[face.no] || {}; const list = (doc.comments || []).slice(-199);
+  list.push({ by: whoName(), at: new Date().toISOString(), text });
+  try { await writeDoc(state.db.doc('faces/' + face.no), { comments: list }); ta.value=''; setMsg('コメントを送信しました', 'ok'); }
+  catch(e){ setMsg('送信できませんでした', 'err'); }
+}
+
+/* ===== イベント ===== */
+$('#exportBtn').addEventListener('click', async () => {
+  const lines = ['【SCAJ2026 ロール文言 保存データ】' + new Date().toLocaleString('ja-JP')];
+  for (const f of FACES) {
+    const d = state.docs[f.no] || {}; const a = state.approvals[f.no] || {};
+    const changed = f.texts.filter(t => savedText(f, t[0]) !== baseText(f, t[0]));
+    const items = a.items || {}, checks = a.checks || {};
+    const anyMark = Object.values(items).some(x => x && x.ok) || Object.values(checks).some(x => x && x.ok);
+    if (!changed.length && !anyMark && !(d.comments && d.comments.length)) continue;
+    lines.push('', `■ 面 ${f.no}｜${f.name}`);
+    for (const t of f.texts) {
+      const id = t[0]; const ch = savedText(f, id) !== baseText(f, id); const ck = checks[id] && checks[id].ok, ok = items[id] && items[id].ok;
+      if (!ch && !ck && !ok) continue;
+      lines.push(`・${t[1]}［${id}］　荻野:${ck ? (checks[id].text === savedText(f, id) ? '✓' : '要再確認') : '－'}　専務:${ok ? (items[id].text === savedText(f, id) ? '✓' : '要再確認') : '－'}`);
+      if (ch) lines.push(`　前：${baseText(f, id).replace(/\n/g,'／')}`, `　後：${savedText(f, id).replace(/\n/g,'／')}`);
+    }
+    for (const c of (d.comments || [])) lines.push(`　💬 ${c.by || ''} ${fmt(c.at)}：${c.text}`);
+  }
+  const s = lines.join('\n');
+  try { await navigator.clipboard.writeText(s); setMsg('保存データをコピーしました。Claude に貼り付ければ Figma に反映できます', 'ok'); }
+  catch (e) { window.prompt('以下をコピーしてください', s); }
+});
+$('#saveBtn').addEventListener('click', () => saveDraft(faceOf(state.cur)).then(() => { renderFaces(); renderEditor(); }));
+const nameIn = $('#myname'); nameIn.value = state.myname;
+nameIn.addEventListener('change', () => { state.myname = nameIn.value; try{ localStorage.setItem('scaj_myname', state.myname); }catch(e){}; });
+document.addEventListener('keydown', e => {
+  if (e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')) return;
+  const i = FACES.findIndex(f => f.no === state.cur);
+  if (e.key === 'ArrowRight' && i < FACES.length-1) selectFace(FACES[i+1].no);
+  if (e.key === 'ArrowLeft' && i > 0) selectFace(FACES[i-1].no);
+});
+window.addEventListener('resize', fitPreview);
+document.addEventListener('focusout', e => {
+  if (state.pendingRender && e.target && e.target.dataset && e.target.dataset.id) {
+    state.pendingRender = false; setTimeout(() => { const a = document.activeElement; if (!(a && a.dataset && a.dataset.id)) renderEditor(); }, 250);
+  }
+});
+
+/* ===== ロール部分の平面図（通路側の什器列だけ・上が什器、下が通路） ===== */
+const MAP_MARK = { '1':[-330,5150], '2':[520,4950], '3':[925,6330], '4':[1330,4950], '5':[1770,4950], '6':[2175,6330], '7':[2580,4950], '8':[3020,4950], '9':[3425,6330], '10':[3830,4950], '11':[4360,4950],
+  '12':[6380,6330], '13':[6380,4950], '19':[-330,5850], '21':[5100,4950] };
+const MAP_NAME = { '12':'帯②｜通路から見える面', '13':'帯②｜ブース内から見える面', '19':'柱 木目部｜原紙サンプル' };
+function renderMap(){
+  const svg = $('#mapSvg'); if (!svg) return;
+  const msig = state.cur + '|' + FACES.map(f => faceAllOk(f) ? 1 : 0).join(''); if (renderMap.last === msig && svg.childNodes.length) return; renderMap.last = msig;
+  const r = (x,y,w,h,c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${c}"/>`;
+  const tx = (x,y,s,c='lab',a='start') => `<text x="${x}" y="${y}" class="${c}" text-anchor="${a}">${esc(s)}</text>`;
+  let g = '';
+  g += `<line x1="-600" y1="6000" x2="6500" y2="6000" class="thin"/>`;            // ブース前端
+  g += r(0,5400,250,600,'fill') + r(0,5400,250,600,'thin') + r(5750,5400,250,600,'fill') + r(5750,5400,250,600,'thin');
+  g += tx(125,6260,'柱a','lab','middle') + tx(5875,6260,'柱b','lab','middle');
+  [[300,'F'],[1550,'G'],[2800,'H']].forEach(([x,l]) => { g += r(x,5400,1250,600,'thin') + r(x+300,5400,650,600,'roll') + tx(x+625,5760,'什器 '+l,'lab b','middle'); });
+  [275,1550,2800,4075].forEach(x => { g += `<circle cx="${x}" cy="5700" r="60" class="ln"/>`; });
+  [300,1525,1550,2775,2800,4025,225,4110].forEach(x => { g += r(x,5400,25,600,'fill'); });
+  g += r(5690,5400,25,600,'fill') + tx(5702,5330,'帯②','lab','middle');
+  g += r(4450,5400,1200,600,'thin') + tx(5050,5760,'入口','lab','middle');
+  g += tx(2200,6720,'通路（お客様はこちらから見る）','lab b','middle');
+  g += tx(5100,4680,'アイランド右下（H の奥）','lab','middle');
+  Object.entries(MAP_MARK).forEach(([no,[x,y]]) => {
+    const f = faceOf(no); const on = no === state.cur;
+    const cls = 'mk' + (f ? '' : ' ghost') + (on ? ' on' : '') + (f && faceAllOk(f) ? ' okd' : '');
+    const title = f ? `${no}｜${f.name}` : `${no}｜${MAP_NAME[no] || ''}（このページには未収録）`;
+    g += `<g class="${cls}" data-no="${no}"><title>${esc(title)}</title><circle cx="${x}" cy="${y}" r="175"/><text x="${x}" y="${y}">${no}</text></g>`;
+  });
+  svg.innerHTML = g;
+  svg.querySelectorAll('g.mk:not(.ghost)').forEach(el => el.addEventListener('click', () => selectFace(el.dataset.no)));
+}
+$('#mapBtn').addEventListener('click', () => { const p = $('#mapPane'); p.hidden = !p.hidden; $('#mapBtn').classList.toggle('on', !p.hidden); try{ localStorage.setItem('scaj_map', p.hidden ? '0' : '1'); }catch(e){}; fitPreview(); });
+try { if (localStorage.getItem('scaj_map') === '0') { $('#mapPane').hidden = true; $('#mapBtn').classList.remove('on'); } } catch(e){}
+
+
+/* ===== フォント読み込み完了までプレビューを隠す（読み込み時の文字の揺れ防止） ===== */
+document.body.classList.add('fonts-loading');
+(async () => {
+  try {
+    const fam = ['300 16px "Noto Sans JP"','400 16px "Noto Sans JP"','400 16px "Noto Serif JP"','500 16px "Noto Serif JP"'];
+    await Promise.race([Promise.all(fam.map(f => document.fonts.load(f))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 3500))]);
+  } catch(e){}
+  document.body.classList.remove('fonts-loading'); fitPreview();
+})();
+
+function renderAll(){ renderFaces(); renderMap(); renderPreview(); renderEditor(); }
+renderAll();
+setStatus('保存先に接続中…');
+
+/* ===== 共有保存（Firebase Realtime Database） ===== */
+(function(){
+  if (typeof firebase === 'undefined' || typeof FIREBASE_CONFIG === 'undefined' || !FIREBASE_CONFIG || !FIREBASE_CONFIG.databaseURL) {
+    setStatus('保存先が未設定'); renderEditor(); return;
+  }
+  let fbdb;
+  try { firebase.initializeApp(FIREBASE_CONFIG); fbdb = firebase.database(); }
+  catch (e) { setStatus('保存先に接続できません'); renderEditor(); return; }
+  const safeKey = id => String(id).replace(/[.#$\/\[\]]/g, '_');
+  const flatten = (body) => {   // 1 段目のオブジェクトは子キーごとに書く（他の人の項目を消さないため）
+    const out = {};
+    for (const [k, v] of Object.entries(body)) {
+      if (v && typeof v === 'object' && !Array.isArray(v) && ['texts','items','checks'].includes(k)) { for (const [id, val] of Object.entries(v)) out[k + '/' + safeKey(id)] = val; }
+      else out[k] = v;
+    }
+    return out;
+  };
+  const unsafe = obj => obj;   // 表示側は安全化したキーのまま扱う（nodeId の ':' はそのまま使える）
+  state.db = {
+    doc: path => ({
+      update: body => fbdb.ref(path).update(flatten(body)),
+      set: body => fbdb.ref(path).update(flatten(body)),
+      delete: () => fbdb.ref(path).remove(),
+    }),
+  };
+  let raf = 0;
+  const applyRender = () => {
+    raf = 0;
+    const active = document.activeElement; const editing = !!(active && active.dataset && active.dataset.id);
+    renderFaces(); renderPreview();
+    if (editing || state.busy) { if (editorSig() !== renderEditor.last) state.pendingRender = true; }
+    else if (editorSig() !== renderEditor.last) renderEditor();
+  };
+  const schedule = () => { if (!raf) raf = requestAnimationFrame(applyRender); };
+  fbdb.ref('faces').on('value', snap => { state.docs = unsafe(snap.val() || {}); setStatus('接続済み'); schedule(); }, () => setStatus('接続が切れました'));
+  fbdb.ref('approvals').on('value', snap => { state.approvals = unsafe(snap.val() || {}); schedule(); });
+  fbdb.ref('meta/baseline').on('value', snap => { state.baseline = snap.val() || null; schedule(); });
+  fbdb.ref('.info/connected').on('value', snap => { if (snap.val() === false) setStatus('オフライン（再接続待ち）'); });
+  renderEditor();
+})();
+</script>
+</body>
+</html>
