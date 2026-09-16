@@ -730,7 +730,9 @@ setStatus('保存先に接続中…');
     if (editing || state.busy) { if (editorSig() !== renderEditor.last) state.pendingRender = true; }
     else if (editorSig() !== renderEditor.last) renderEditor();
   };
-  const schedule = () => { if (!raf) raf = requestAnimationFrame(applyRender); };
+  // 非表示タブでは requestAnimationFrame が止まるため setTimeout で代替（戻ったときに古い表示のままにならないように）
+  const schedule = () => { if (raf) return; raf = document.hidden ? setTimeout(applyRender, 0) : requestAnimationFrame(applyRender); };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) schedule(); });
   fbdb.ref('faces').on('value', snap => { state.docs = unsafe(snap.val() || {}); setStatus('接続済み'); schedule(); }, () => setStatus('接続が切れました'));
   fbdb.ref('approvals').on('value', snap => { state.approvals = unsafe(snap.val() || {}); schedule(); });
   fbdb.ref('meta/baseline').on('value', snap => { state.baseline = snap.val() || null; schedule(); });
