@@ -334,11 +334,11 @@ try { const f = localStorage.getItem('scaj_face'); if (f && FACES.some(x=>x.no==
 try { const l = JSON.parse(localStorage.getItem('scaj_local') || '{}'); if (l && typeof l === 'object') state.local = l; } catch(e){}
 
 const faceOf = no => FACES.find(f => f.no === no);
-const figmaText = (face, id) => face.texts.find(t => t[0] === id)[12];
+const figmaText = (face, id) => { const t = face.texts.find(t => t[0] === id); return t ? t[12] : ''; };
 const baseText = (face, id) => (state.baseline && state.baseline.texts && state.baseline.texts[id] != null) ? state.baseline.texts[id] : figmaText(face, id);
 const savedText = (face, id) => { const d = state.docs[face.no]; return (d && d.texts && d.texts[id] != null) ? d.texts[id] : baseText(face, id); };
 const curText = (face, id) => { const l = state.local[face.no]; return (l && l[id] != null) ? l[id] : savedText(face, id); };
-const hasUnsaved = face => { const l = state.local[face.no]; return !!l && Object.keys(l).some(id => l[id] !== savedText(face, id)); };
+const hasUnsaved = face => { const l = state.local[face.no]; return !!l && Object.keys(l).some(id => face.texts.some(t => t[0] === id) && l[id] !== savedText(face, id)); };
 const hasDiff = face => face.texts.some(t => savedText(face, t[0]) !== baseText(face, t[0]));   // Figma に未反映
 const itemOf = (face, id) => { const a = state.approvals[face.no]; const it = a && a.items && a.items[id]; return (it && it.ok) ? it : null; };
 const itemStale = (face, id) => { const it = itemOf(face, id); return !!it && it.text !== savedText(face, id); };
