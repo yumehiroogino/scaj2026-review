@@ -134,6 +134,21 @@
   .okrow .okitem.sub{background:none;color:inherit;border-color:var(--rule-soft);font-size:11px;padding:1px 8px}
   .fld.s-synced textarea{border-color:var(--ok)}
   .offline{border:1px solid var(--warn);color:var(--warn);padding:6px 10px;font-size:12px}
+  .editor .prog{font-size:11px;color:var(--ink-3);font-weight:300;margin-top:-6px}
+  .editor .prog .badge{margin-left:8px}
+  .fld .lab{align-items:center;flex-wrap:wrap}
+  .fld .lab .nm{font-size:13px;color:var(--ink)}
+  .fld .lab .cnt{margin-left:8px;font-size:10px;color:var(--ink-3);font-weight:300;font-variant-numeric:tabular-nums}
+  .fld .btns{display:flex;gap:6px;flex:none;margin-left:auto}
+  .fld .okitem{padding:3px 12px;font-size:12px;background:none;color:inherit;border-color:var(--ink)}
+  .fld .okitem.done{color:var(--ok);border-color:var(--ok)}
+  .fld .okitem.stale{color:var(--warn);border-color:var(--warn)}
+  details.more summary,details.help summary,details.memo summary{font-size:10px;color:var(--ink-3);cursor:pointer;list-style:none;display:inline-block;font-weight:300}
+  details.more summary::-webkit-details-marker,details.help summary::-webkit-details-marker{display:none}
+  details.more summary::before{content:'▸ '}
+  details.more[open] summary::before{content:'▾ '}
+  details.more summary .w{color:var(--warn);margin-left:6px}
+  details.more .fig{display:block;margin-top:2px;line-height:1.7}
 
   /* 操作バー：名前・役割・一時保存・OK を一列に */
   .actbar{flex:none;border-top:1px solid var(--rule);background:var(--bar);padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -439,17 +454,14 @@ function renderEditor(){
   renderEditor.last = editorSig();
   const doc = state.docs[face.no] || {};
   const printed = face.texts.filter(t => t[11]); const memos = face.texts.filter(t => !t[11]);
-  const unsaved = hasUnsaved(face); const diff = hasDiff(face); const pend = pendingItems(face);
+  const unsaved = hasUnsaved(face);
   const ids = printedIds(face); const okCount = ids.filter(id => ['synced','pending','error'].includes(itemState(face, id))).length;
-  let badges = '';
-  if (unsaved) badges += '<span class="badge warn">未保存</span>';
   const chkCount = ids.filter(id => checkState(face, id) === 'ok').length;
-  if (ids.length) badges += `<span class="badge ${chkCount === ids.length ? 'ok' : ''}">荻野 確認 ${chkCount}／${ids.length}</span><span class="badge ${okCount === ids.length ? 'ok' : ''}">専務 確認 ${okCount}／${ids.length}</span>`;
-  if (diff) badges += '<span class="badge warn">Figma に未反映</span>';
-  else badges += '<span class="badge ok">Figma と同じ</span>';
-  let html = `<h2>面 ${face.no}｜${esc(face.name)}${badges}<small>Figma フレーム ${face.id}${doc.updatedAt ? `　保存 ${fmt(doc.updatedAt)}${doc.updatedBy ? '（'+esc(doc.updatedBy)+'さん）' : ''}` : ''}</small></h2>`;
-  if (!state.db) html += `<div class="offline">保存先（Firebase）に接続していません。firebase-config.js の設定を確認してください。編集内容はこの端末だけに残ります。</div>`;
+  const prog = ids.length ? `荻野 ${chkCount}／${ids.length}　専務 ${okCount}／${ids.length}` : '';
+  let html = `<h2>面 ${face.no}｜${esc(face.name)}</h2>${prog || unsaved ? `<div class="prog">${prog}${unsaved ? '<span class="badge warn">未保存あり</span>' : ''}</div>` : ''}`;
+  if (!state.db) html += `<div class="offline">保存先（Firebase）に接続していません。編集内容はこの端末だけに残ります。</div>`;
   const log = doc.log || [];
+  const can = state.db && !state.busy;
   const fld = (t, memo) => {
     const [id,name,,,w,font,,size] = t;
     const v = curText(face, id); const b = baseText(face, id); const sv = savedText(face, id);
@@ -457,38 +469,33 @@ function renderEditor(){
     const it = itemOf(face, id); const stt = itemState(face, id);
     const last = [...log].reverse().find(e => e.id === id);
     const ck = checkOf(face, id); const cst = checkState(face, id);
-    let ckrow = cst === 'none' ? `<span class="st none">荻野 確認なし</span>` : cst === 'stale' ? `<span class="st stale">確認後に変更あり（荻野 ${fmt(ck.at)} の確認は「${esc(ck.text)}」）</span>` : `<span class="st ok">荻野 確認 ${fmt(ck.at)}</span>`;
-    let okrow = '';
-    if (stt === 'none') okrow = `<span class="st none">専務 確認なし</span>`;
-    else if (stt === 'stale') okrow = `<span class="st stale">確認後に変更あり（専務 ${fmt(it.at)} の確認は「${esc(it.text)}」）</span>`;
-    else if (stt === 'synced') okrow = `<span class="st ok">専務 確認 ${fmt(it.at)}　Figma 反映済 ${fmt(it.syncedAt)}</span>`;
-    else if (stt === 'error') okrow = `<span class="st ok">専務 確認 ${fmt(it.at)}</span>`;
-    else okrow = `<span class="st ok">専務 確認 ${fmt(it.at)}</span>`;
-    const can = state.db && !state.busy;
-    const ckBtn = (cst === 'none' || cst === 'stale')
-      ? `<button type="button" class="okitem chk" data-chk="${id}" ${can ? '' : 'disabled'}>荻野 ${cst === 'stale' ? '再確認' : '確認'}</button>`
-      : `<button type="button" class="okitem chk done" data-unchk="${id}" ${state.db && !state.busy ? '' : 'disabled'} title="押すと確認を取り消します">荻野 ✓</button>`;
-    const okBtn = (stt === 'none' || stt === 'stale')
-      ? `<button type="button" class="okitem" data-ok="${id}" ${can ? '' : 'disabled'}>専務 ${stt === 'stale' ? '再確認' : '確認'}</button>`
-      : `<button type="button" class="okitem done" data-unok="${id}" ${state.db && !state.busy ? '' : 'disabled'} title="押すと確認を取り消します">専務 ✓</button>`;
-    const okbtn = `<span class="btns">${ckBtn}${okBtn}</span>`;
+    const btn = (who, st, onAttr, offAttr, cls) => (st === 'none' || st === 'stale')
+      ? `<button type="button" class="okitem ${cls}${st === 'stale' ? ' stale' : ''}" ${onAttr}="${id}" ${can ? '' : 'disabled'}>${who} ${st === 'stale' ? '再確認' : '確認'}</button>`
+      : `<button type="button" class="okitem ${cls} done" ${offAttr}="${id}" ${can ? '' : 'disabled'} title="押すと確認を取り消します">${who} ✓</button>`;
+    const btns = memo ? '' : `<span class="btns">${btn('荻野', cst, 'data-chk', 'data-unchk', 'chk')}${btn('専務', (stt === 'none' || stt === 'stale') ? stt : 'ok', 'data-ok', 'data-unok', 'exe')}</span>`;
+    const info = [];
+    info.push(`${font==='serif'?'明朝':font==='hand'?'手書き体':'ゴシック'} ${size}px／幅 ${w}`);
+    if (!memo) {
+      if (cst === 'ok') info.push(`荻野 確認 ${fmt(ck.at)}`); else if (cst === 'stale') info.push(`荻野 確認後に変更あり（確認時「${esc(ck.text)}」）`);
+      if (stt === 'stale') info.push(`専務 確認後に変更あり（確認時「${esc(it.text)}」）`); else if (stt !== 'none') info.push(`専務 確認 ${fmt(it.at)}`);
+    }
+    if (last && last.from !== undefined) info.push(`最終変更：${esc(last.by)}さん ${fmt(last.at)}　前「${esc(last.from)}」`);
+    if (changed) info.push(`Figma 現在：<b>${esc(b)}</b><button type="button" data-revert="${id}">Figma の文言に戻す</button>`);
     return `<div class="fld${changed ? ' diff' : ''}${dirty ? ' unsaved' : ''} s-${stt}">
-      <div class="lab"><span>${esc(name)}${dirty ? '<span class="badge warn">未保存</span>' : ''}</span><span class="meta">${font==='serif'?'明朝':font==='hand'?'手書き体':'ゴシック'} ${size}px／幅 ${w}　<span id="cnt-${k(id)}">${v.replace(/\n/g,'').length}</span> 字</span></div>
+      <div class="lab"><span class="nm">${esc(String(name).replace(/（[^）]*）/g, ''))}<span class="cnt" id="cnt-${k(id)}">${v.replace(/\n/g,'').length}字</span>${dirty ? '<span class="badge warn">未保存</span>' : ''}</span>${btns}</div>
       <textarea id="ta-${k(id)}" data-id="${id}" rows="${Math.max(1, Math.min(8, v.split('\n').length + (v.length > 40 ? 2 : 0)))}" class="${big?'big':''}" spellcheck="false">${esc(v)}</textarea>
-      ${memo ? '' : `<div class="okrow"><span class="stack">${ckrow}${okrow}</span>${okbtn}</div>`}
-      ${changed ? `<div class="fig">Figma 現在：<b>${esc(b)}</b><button type="button" data-revert="${id}">Figma の文言に戻す</button></div>` : ''}
-      ${last && last.from !== undefined ? `<div class="fig">変更：${esc(last.by)}さん ${fmt(last.at)}　前「${esc(last.from)}」</div>` : ''}
+      <details class="more"><summary>詳細${changed ? '<span class="w">Figma と違う</span>' : ''}</summary><div class="fig">${info.join('<br>')}</div></details>
     </div>`;
   };
-  html += `<div class="grp"><div class="gl">印刷される文言</div>${printed.length ? printed.map(t => fld(t, false)).join('') : '<div class="note">この面のロールは無地刷り。文字は入れず、現物と札で見せる面です。</div>'}</div>`;
-  if (memos.length) html += `<details class="grp memo"><summary class="gl">Figma 上のメモ（印刷されない注記：展示物の内容・無地範囲の目印）— 開く</summary><div class="note">ロール本体には印刷されない、図面用の注記です。確認ボタンは付けていません。</div>${memos.map(t => fld(t, true)).join('')}</details>`;
+  html += printed.length ? `<div class="grp">${printed.map(t => fld(t, false)).join('')}</div>` : '<div class="note">この面は文字を入れず、現物と札で見せる面です。</div>';
+  if (memos.length) html += `<details class="grp memo"><summary class="gl">▸ その他の注記（印刷されない）</summary>${memos.map(t => fld(t, true)).join('')}</details>`;
 
   const cs = (doc.comments || []);
-  html += `<div class="grp cmt"><div class="gl">この面へのコメント（「もっと短く」など）</div>
-    <div class="list">${cs.length ? cs.map(c => `<div class="c"><div class="h">${esc(c.by)}　${fmt(c.at)}</div><div>${esc(c.text)}</div></div>`).join('') : '<span class="note">コメントはまだありません</span>'}</div>
-    <div class="in"><textarea id="cmtIn" placeholder="例：説明文をもう 2 行短く" ${state.db ? '' : 'disabled'}></textarea><button type="button" id="cmtBtn" ${state.db ? '' : 'disabled'}>追加</button></div>
+  html += `<div class="grp cmt"><div class="gl">コメント${cs.length ? `（${cs.length}件）` : ''}</div>
+    ${cs.length ? `<div class="list">${cs.map(c => `<div class="c"><div class="h">${esc(c.by)}　${fmt(c.at)}</div><div>${esc(c.text)}</div></div>`).join('')}</div>` : ''}
+    <div class="in"><textarea id="cmtIn" placeholder="この面へのコメント（例：説明文をもう 2 行短く）" ${state.db ? '' : 'disabled'}></textarea><button type="button" id="cmtBtn" ${state.db ? '' : 'disabled'}>追加</button></div>
   </div>`;
-  html += `<div class="note">編集したら下の「保存」で全員に共有されます（保存前は点線枠）。橙の枠は Figma に未反映の文言。各文言の右の「荻野 確認」「専務 確認」はボタンを押すだけで記録されます（未保存の編集があれば自動で保存してから記録）。確認後に文言が変わった欄は再確認が必要です。Figma への反映は Claude が別途行います。<br>← → キーで面を切り替え。プレビューの文字をタップすると該当欄に移動します。</div>`;
+  html += `<details class="help"><summary>▸ 使い方</summary><div class="note">文言を直したら下の「保存」で全員に共有されます（保存前は点線枠）。「荻野 確認」「専務 確認」は押すだけで記録され、もう一度押すと取り消せます。確認後に文言が変わると「再確認」になります。確認日時・変更履歴・Figma との違いは各欄の「詳細」で見られます。Figma への反映は Claude が行います。</div></details>`;
   ed.innerHTML = html;
 
   ed.querySelectorAll('textarea[data-id]').forEach(ta => {
@@ -509,7 +516,7 @@ function onEdit(face, id, value){
   if (!Object.keys(state.local[face.no]).length) delete state.local[face.no];
   saveLocal();
   const p = $(`#frame .t[data-id="${id}"]`); if (p) p.textContent = value;
-  const c = document.getElementById('cnt-'+k(id)); if (c) c.textContent = value.replace(/\n/g,'').length;
+  const c = document.getElementById('cnt-'+k(id)); if (c) c.textContent = value.replace(/\n/g,'').length + '字';
   const ta = document.getElementById('ta-'+k(id));
   if (ta) { const f = ta.closest('.fld'); f.classList.toggle('unsaved', value !== savedText(face, id)); f.classList.toggle('diff', value !== baseText(face, id)); }
   renderActbar(); renderFaces();
