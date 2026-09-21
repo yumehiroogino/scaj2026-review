@@ -225,6 +225,10 @@
 /* ===== Figma から読み込んだ面データ（什器 F/G/H・背面 壁面 a〜d・アイランド 2 台） ===== */
 const FIGMA_FILE_KEY = 'ZAEBPIKTF8IUYxjwAgXvBv';
 const FRAME_BG = '#edede8';
+/* 外枠が何を表しているか（プレビューの枠線） */
+const OUTER = { fixF:'什器 F 天板 600 × 650mm（下が通路側）', fixG:'什器 G 天板 600 × 650mm（下が通路側）', fixH:'什器 H 天板 600 × 650mm（下が通路側）',
+  wallA:'背面 壁面 a 1 面ぶん（下が床）', wallB:'背面 壁面 b 1 面ぶん（下が床）', wallC:'背面 壁面 c 1 面ぶん（下が床）', wallD:'背面 壁面 d 1 面ぶん（下が床）',
+  island:'アイランド 右下 天面 600 角', island2:'アイランド 左下 天面 600 角' };
 const RECTS = {
   fixF: [
     ['r',100,600,220,100,'bag',1,'袋 S 1'],
@@ -235,18 +239,21 @@ const RECTS = {
     ['r',390,40,420,80,null,1.5,'バリア値 POP'],
   ],
   fixG: [
-    ['r',84,344,1032,212,'stage',1.5,'陳列ボックス 前列 外寸 W516×D106'],
-    ['r',100,360,1000,180,'roll',1,'陳列ボックス 前列 内寸 W500×D90×H60'],
-    ['r',394,14,412,232,'stage',1.5,'陳列ボックス L 外寸 W206×D116'],
-    ['r',410,30,380,200,'roll',1,'陳列ボックス L 内寸 W190×D100×H60'],
+    ['r',180,90,720,140,'stage',1.5,'配送箱A 外寸（S×3）'],
+    ['r',190,100,700,120,'roll',1,'配送箱A 内寸 W350×D60'],
+    ['r',180,300,720,140,'stage',1.5,'配送箱B 外寸（M×2）'],
+    ['r',190,310,700,120,'roll',1,'配送箱B 内寸 W350×D60'],
+    ['r',200,110,220,100,'bag',1,'袋 S 110×50 ①'],
+    ['r',430,110,220,100,'bag',1,'袋 S 110×50 ②'],
+    ['r',660,110,220,100,'bag',1,'袋 S 110×50 ③'],
+    ['r',216,320,310,100,'bag',1,'袋 M 155×50 ①'],
+    ['r',554,320,310,100,'bag',1,'袋 M 155×50 ②'],
+    ['r',180,510,240,148,'bag',1,'袋 XS 120×74（参考展示）'],
+    ['r',520,510,340,180,'bag',1,'袋 L 170×90（参考展示・寝かせる）'],
     ['r',300,800,600,120,null,1.5,'口金 300×60'],
     ['r',330,830,540,60,'stage',1,'開口 270×30'],
-    ['r',158,360,240,148,'bag',1,'袋 XS 120×74'],
-    ['r',455,360,220,100,'bag',1,'袋 S 110×50'],
-    ['r',732,360,310,100,'bag',1,'袋 M 155×50'],
-    ['r',430,40,340,180,'bag',1,'袋 L 170×90'],
-    ['r',60,970,296,210,null,1.5,'置き札 E2（A6横）'],
-    ['r',300,580,600,200,null,1.5,'キャプションボード E3（W300×H100・口金と同じ横幅）'],
+    ['r',2,780,296,210,null,1.5,'置き札 E2（A6横）'],
+    ['r',300,1010,600,200,null,1.5,'キャプションボード E3（W300×H100・口金と同じ横幅）'],
   ],
   fixH: [
     ['r',40,100,820,550,'roll',1,'平置き座布団｜袋5枚＋概要キャプションを直接印刷'],
@@ -356,17 +363,16 @@ const FACES = [
     ['fixF-n7','バリア値 POP（A5横・立て）',300,182,600,'sans',300,20,150,'center','#6b6b68',false,'バリア値 POP（A5横・立て）'],
   ]},
   {no:'6', id:'151:9', kind:'fixG', w:1200, h:1300, name:'什器 G｜天面（1:5）届く／投函体験・XS S M ＋ L・置き札 E2・小札 E3', texts:[
-    ['fixG-n0','ポスト投函対応 3 サイズ（前列・前縁から 380）',60,245,1080,'sans',300,22,150,'center','#6b6b68',false,'ポスト投函対応 3 サイズ（前列・前縁から 380）'],
-    ['fixG-n1','XS',158,296,240,'sans',300,22,150,'center','#6b6b68',false,'XS'],
-    ['fixG-n2','S',455,296,220,'sans',300,22,150,'center','#6b6b68',false,'S'],
-    ['fixG-n3','M',732,296,310,'sans',300,22,150,'center','#6b6b68',false,'M'],
-    ['fixG-n4','L',820,58,300,'sans',300,20,150,'left','#6b6b68',false,'L\nポスト投函 非対応\n（宅配便向け）'],
-    ['fixG-n8','注 陳列ボックス 前列',8,596,272,'sans',300,18,140,'center','#6b6b68',false,'陳列ボックス 内寸 W500×D90×H60\n袋は立てて並べる（手で押さえない）'],
-    ['fixG-n9','注 陳列ボックス L',820,160,340,'sans',300,18,140,'center','#6b6b68',false,'陳列ボックス 内寸 W190×D100×H60'],
-    ['fixG-n10','注 キャプションボード',920,630,260,'sans',300,18,140,'center','#6b6b68',false,'キャプションボード W300×H100\n口金（300）と同じ横幅'],
-    ['fixG-n5','天板 埋め込み投函口（開口 270×30）',120,972,960,'sans',300,20,150,'center','#6b6b68',false,'天板 埋め込み投函口（開口 270×30）\n体験用の袋を差したままにする'],
-    ['fixG-n6','E2',60,1062,296,'sans',300,20,150,'center','#6b6b68',false,'E2'],
-    ['fixG-n7','E3',300,666,600,'sans',300,20,150,'center','#6b6b68',false,'E3'],
+    ['fixG-n0','ポスト投函 1 通に何袋おさまるか',60,10,1080,'sans',300,22,140,'center','#6b6b68',false,'ポスト投函の 1 通（長辺 34cm × 短辺 25cm × 厚さ 3cm）に、何袋おさまるか'],
+    ['fixG-n1','S は 3 つ',180,36,720,'sans',300,20,140,'center','#6b6b68',false,'S（W110 × H215）なら 3 つ　―　横に並べて 330mm。長辺 34cm におさまる'],
+    ['fixG-n2','M は 2 つ',180,246,720,'sans',300,20,140,'center','#6b6b68',false,'M（W155 × H215）なら 2 つ　―　横に並べて 310mm。同じ 1 通におさまる'],
+    ['fixG-n3','XS 参考展示',180,670,320,'sans',300,20,140,'center','#6b6b68',false,'XS（W120 × H150）　参考展示'],
+    ['fixG-n4','L 参考展示',870,520,310,'sans',300,20,140,'left','#6b6b68',false,'L（W170 × H215 × D90）\nポスト投函 非対応（宅配便向け）\n参考展示・寝かせて置く'],
+    ['fixG-n5','天板 埋め込み投函口',100,1222,1000,'sans',300,20,140,'center','#6b6b68',false,'天板 埋め込み投函口（開口 270×30）\n体験用の袋を差したままにする'],
+    ['fixG-n6','E2',2,872,296,'sans',300,20,140,'center','#6b6b68',false,'E2'],
+    ['fixG-n7','キャプションボード 文面（案）',320,1040,560,'sans',300,20,140,'center','#6b6b68',false,'ポスト投函の 1 通に、S は 3 つ、M は 2 つ。\n厚さ 3cm・長辺 34cm の枠に、並べて入ります。'],
+    ['fixG-n8','注 配送箱',880,700,300,'sans',300,18,140,'center','#6b6b68',false,'袋は配送箱に立てて並べる\n（手で押さえない）'],
+    ['fixG-n10','注 キャプションボード',920,1060,270,'sans',300,18,140,'center','#6b6b68',false,'キャプションボード W300×H100\n口金（300）と同じ横幅・投函口の手前'],
   ]},
   {no:'9', id:'151:13', kind:'fixH', w:1200, h:1300, name:'什器 H｜天面（1:5）伝える／平置き 5 枚 ＋ 立置き 4 袋・座布団に直接印刷するキャプション', texts:[
     ['193:3','座布団 概要 見出し',60,159,760,'sans',500,18,150,'left','#1a1a1a',true,'GeoPosting Pack',180],
@@ -528,6 +534,8 @@ function renderPreview(){
   const psig = previewSig(face); if (renderPreview.last === psig) { fitPreview(); return; } renderPreview.last = psig;
   const fr = $('#frame'); fr.innerHTML = '';
   fr.style.width = face.w + 'px'; fr.style.height = face.h + 'px'; fr.style.background = FRAME_BG;
+  fr.style.border = '3px solid #1a1a1a';   // 什器 天板／壁面／アイランドの外形
+  fr.title = OUTER[face.kind] || '';
   const fillOf = kk => ({ roll:'var(--roll)', stage:'var(--stage)', soil:'var(--soil)', bag:'var(--bag)', ink:'var(--ink)' })[kk] || 'transparent';
   for (const r of RECTS[face.kind]) {
     const [kind,x,y,w,h,fill,sw,name,rot] = r;
@@ -572,7 +580,7 @@ function fitPreview(){
   fr.style.transform = `scale(${s})`;
   fr.style.left = Math.max(0, (W - face.w*s)/2) + 'px';
   fr.style.top = (-y0*s + Math.max(0, (H - ch)/2)) + 'px';
-  $('#flnote').textContent = 'Figma の図と同じ（什器・アイランド 1:5／壁面 1:25）' + `　表示倍率 ${(s*100).toFixed(0)}%`;
+  $('#flnote').textContent = (OUTER[face.kind] ? '外枠＝' + OUTER[face.kind] + '　' : '') + 'Figma の図と同じ' + `　表示倍率 ${(s*100).toFixed(0)}%`;
 }
 new ResizeObserver(fitPreview).observe($('#stage'));
 [['zoomText','text'],['zoomPrint','print'],['zoomAll','all']].forEach(([id,z]) => $('#'+id).addEventListener('click', () => { state.zoom = z; try{localStorage.setItem('scaj_zoom', z)}catch(e){}; renderPreview(); }));
