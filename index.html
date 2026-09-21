@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>SCAJ2026 ロール文言レビュー</title>
+<title>SCAJ2026 什器・アイランド・壁面 レビュー</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="firebase-config.js"></script>
@@ -188,7 +188,7 @@
 </head>
 <body>
 <header>
-  <div><h1>SCAJ2026 ロール文言レビュー</h1><div class="sub">修正・確認・コメントは自動で共有され、開いている全員にリアルタイム反映（ログイン不要）</div></div>
+  <div><h1>SCAJ2026 什器・アイランド・壁面 レビュー</h1><div class="sub">修正・確認・コメントは自動で共有され、開いている全員にリアルタイム反映（ログイン不要）</div></div>
   <nav class="faces" id="faces" aria-label="面の切り替え"></nav>
   <div class="status" id="status">読み込み中</div>
 </header>
@@ -203,7 +203,7 @@
       <button id="expandBtn" class="expand" type="button">拡大</button>
       <button id="mapBtn" class="on" type="button">図面</button>
     </div>
-    <div class="map" id="mapPane"><svg id="mapSvg" viewBox="-620 4500 7300 2400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="ブース平面図：面の位置"></svg></div>
+    <div class="map" id="mapPane"><svg id="mapSvg" viewBox="-700 -750 7400 7500" preserveAspectRatio="xMidYMid meet" role="img" aria-label="ブース平面図：面の位置"></svg></div>
     <div class="stage" id="stage"><div class="scroller" id="scroller"><div class="frame" id="frame"></div></div><div class="flnote" id="flnote"></div></div>
   </section>
   <section class="edcol">
@@ -222,37 +222,84 @@
 </main>
 
 <script>
-/* ===== Figma から読み込んだ面データ（ページ「ロール両面 展開」43:2） ===== */
+/* ===== Figma から読み込んだ面データ（什器 F/G/H・背面 壁面 a〜d・アイランド 2 台） ===== */
 const FIGMA_FILE_KEY = 'ZAEBPIKTF8IUYxjwAgXvBv';
 const FRAME_BG = '#edede8';
 const RECTS = {
-  roll: [
-    ['r',0,0,600,1300,null,1.5,'天井看板'],
-    ['r',0,1300,600,200,null,1.5,'梁'],
-    ['r',0,1200,600,1580,'roll',2,'ロール 立ち上がり'],
-    ['r',0,2780,600,320,'roll',1.5,'ロール カール'],
-    ['e',250,1200,100,100,null,1.5,'ロッド'],
-    ['r',0,3100,600,780,null,2,'展示台'],
-    ['r',0,3880,600,120,'stage',1,'ステージ'],
-    ['r',12,1800,576,800,null,1,'印刷範囲'],
-    ['l',0,2200,600,0,null,1,'アイライン FL1800'],
-    ['r',60,2900,120,200,null,1.5,'展示物'],
-    ['r',220,2940,160,160,null,1.5,'展示物'],
+  // 什器 F｜天面 1250×600（上が奥・下が通路）＋ 下に座布団へ直接印刷するキャプション欄
+  fixF: [
+    ['r',0,0,1250,600,null,2,'什器 F 天板 1250×600'],
+    ['r',60,60,1130,260,'stage',1,'平置き用 座布団（奥側）'],
+    ['r',100,110,110,215,'bag',1,'平置き 1'],
+    ['r',310,110,110,215,'bag',1,'平置き 2'],
+    ['r',520,110,110,215,'bag',1,'平置き 3'],
+    ['r',730,110,110,215,'bag',1,'平置き 4'],
+    ['r',940,110,110,215,'bag',1,'平置き 5'],
+    ['r',60,380,1130,180,'stage',1,'立置き用 座布団（通路側）'],
+    ['r',180,430,110,50,'bag',1,'01 Tomorrow Bag 1.0'],
+    ['r',460,430,110,50,'bag',1,'04 3.0 晒クレープ紙'],
+    ['r',740,430,110,50,'bag',1,'03 3.0 晒片艶紙'],
+    ['r',1020,430,110,50,'bag',1,'02 Future bio Bag'],
+    ['l',0,624,1250,0,null,1,'天面ここまで'],
   ],
-  outer: [
-    ['r',0,0,600,1300,null,1.5,'天井看板'],
-    ['r',0,1300,600,200,null,1.5,'梁'],
-    ['r',0,1200,600,2530,'roll',2,'ロール 端の垂れ'],
-    ['e',250,1200,100,100,null,1.5,'ロッド'],
-    ['r',0,3880,600,120,'stage',1,'ステージ'],
-    ['r',12,1800,576,800,null,1,'印刷範囲'],
-    ['l',0,2200,600,0,null,1,'アイライン FL1800'],
+  fixG: [
+    ['r',0,0,1250,600,null,2,'什器 G 天板 1250×600'],
+    ['r',500,170,170,90,'bag',1,'L（投函対象外）'],
+    ['r',490,300,270,30,'stage',1,'投函口 開口 270×30'],
+    ['r',120,466,120,74,'bag',1,'XS'],
+    ['r',430,490,110,50,'bag',1,'S'],
+    ['r',730,490,155,50,'bag',1,'M'],
   ],
-  disp: [
-    ['r',0,3100,600,780,null,2,'展示台'],
-    ['r',0,3880,600,120,'stage',1,'ステージ'],
-    ['r',120,2885,140,200,null,1.5,'展示物 1'],
-    ['r',330,2925,170,160,null,1.5,'展示物 2'],
+  fixH: [
+    ['r',0,0,1250,600,null,2,'什器 H 天板 1250×600'],
+    ['r',420,150,420,260,'stage',1,'紙見本帳（開いた状態）'],
+    ['r',130,470,110,50,'bag',1,'紙 ①'],
+    ['r',570,470,110,50,'bag',1,'紙 ②'],
+    ['r',1010,470,110,50,'bag',1,'紙 ③'],
+  ],
+  wallA: [
+    ['r',0,0,1250,2300,null,2,'背面 a 1250（FL0〜2300）'],
+    ['r',40,400,1170,1900,null,1.5,'掲示パネル H1900（仮）'],
+    ['r',40,1888,1170,12,'stage',1,'台 FL400（仮）'],
+    ['r',120,1673,110,215,'bag',1,'靴下 1'],
+    ['r',300,1673,110,215,'bag',1,'靴下 2'],
+    ['r',480,1673,110,215,'bag',1,'ハンカチ 1'],
+    ['r',660,1673,110,215,'bag',1,'ハンカチ 2'],
+    ['r',840,1673,110,215,'bag',1,'ペットフード 1'],
+    ['r',1020,1673,110,215,'bag',1,'ペットフード 2'],
+  ],
+  wallB: [
+    ['r',0,0,1250,2300,null,2,'背面 b 1250（FL0〜2300）'],
+    ['r',40,400,1170,1900,null,1.5,'掲示パネル H1900（仮）'],
+    ['r',40,1888,1170,12,'stage',1,'台 FL400（仮）'],
+    ['r',150,1673,155,215,'bag',1,'デジタル印刷 実例 M1'],
+    ['r',360,1673,155,215,'bag',1,'デジタル印刷 実例 M2'],
+    ['r',570,1673,155,215,'bag',1,'デジタル印刷 実例 M3'],
+    ['r',790,1673,110,215,'bag',1,'デジタル印刷 実例 S1'],
+    ['r',950,1673,110,215,'bag',1,'デジタル印刷 実例 S2'],
+  ],
+  wallC: [
+    ['r',0,0,1250,2300,null,2,'背面 c 1250（FL0〜2300）'],
+    ['r',60,900,1130,20,'stage',1,'上段 棚板 FL1400（仮）'],
+    ['r',60,1200,1130,20,'stage',1,'中段 棚板 FL1100（仮）'],
+    ['r',60,1500,1130,20,'stage',1,'下段 棚板 FL800（仮）'],
+    ['r',120,685,120,215,'bag',1,'無地 XS'],
+    ['r',300,685,110,215,'bag',1,'無地 S'],
+    ['r',470,685,155,215,'bag',1,'無地 M'],
+    ['r',700,685,170,215,'bag',1,'無地 L'],
+    ['r',100,985,155,215,'bag',1,'花柄 M1'],
+    ['r',280,985,155,215,'bag',1,'花柄 M2'],
+    ['r',460,985,155,215,'bag',1,'花柄 M3'],
+    ['r',650,985,110,215,'bag',1,'花柄 S1'],
+    ['r',800,985,110,215,'bag',1,'花柄 S2'],
+    ['r',950,985,110,215,'bag',1,'花柄 S3'],
+    ['r',110,1350,300,150,'stage',1,'サンプルキット'],
+    ['r',620,1290,148,210,null,1.5,'立て看板（購入できます）'],
+    ['r',60,1540,1130,480,null,1,'販売ストック（棚の下）'],
+  ],
+  wallM: [
+    ['r',0,0,1250,2300,null,2,'背面 d 1250（FL0〜2300）'],
+    ['r',70,700,1110,625,'stage',1,'50インチ モニター（ゲストブリュー）'],
   ],
   island: [
     ['r',5,5,590,590,null,1.5,'アクリルケース（平面）'],
@@ -262,63 +309,61 @@ const RECTS = {
     ['r',350,326,62,58,'bag',1,'袋 24h'],
     ['r',490,340,62,30,'bag',1,'袋 土へ'],
   ],
+  island2: [
+    ['r',10,100,600,600,null,2,'アイランド左下 600×600'],
+    ['e',140,230,340,340,'stage',1,'中央台 φ340・高さ220'],
+    ['r',232.5,600.0,155,50,'bag',1,'袋 ① M（0°）',0],
+    ['r',455.7,547.6,110,50,'bag',1,'袋 ④ S（60°）',-60],
+    ['r',522.0,367.1,155,50,'bag',1,'袋 ② M（120°）',-120],
+    ['r',365.0,200.0,110,50,'bag',1,'袋 ⑤ S（180°）',-180],
+    ['r',175.5,232.9,155,50,'bag',1,'袋 ③ M（240°）',-240],
+    ['r',109.3,452.4,110,50,'bag',1,'袋 ⑥ S（300°）',-300],
+    ['r',293.5,491.5,120,74,'bag',1,'袋 ⑦ XS（30°）',-30],
+    ['r',397.5,368.5,120,74,'bag',1,'袋 ⑧ XS（150°）',-150],
+    ['r',239.0,340.0,120,74,'bag',1,'袋 ⑨ XS（270°）',-270],
+    ['r',14,104,105,74,null,1.5,'キャプション C4 奥左（A7 横 平置き）'],
+    ['r',501,104,105,74,null,1.5,'キャプション C3 奥右（A7 横 平置き）'],
+    ['r',14,622,105,74,null,1.5,'キャプション C1 前左（A7 横 平置き）'],
+    ['r',501,622,105,74,null,1.5,'キャプション C2 前右（A7 横 平置き）'],
+  ],
 };
 // text: [nodeId, レイヤー名, x, y, w, font(sans|serif|hand), weight, size, lineHeight%('auto'), align, color, 印刷される文言か, 文字列]
 const FACES = [
-  {no:'1', id:'16:2', kind:'outer', w:600, h:4000, name:'一番左の外側ロール（左から来る人に向く面）｜紙は、森から来ている。', texts:[
-    ['16:11','ラベル',45,2110,510,'sans',300,16,170,'left','#1a1a1a',true,'GEOPACK STORY 00｜はじまり'],
-    ['16:12','キャッチコピー（横組み）',45,2157,510,'serif',500,44,140,'left','#1a1a1a',true,'紙は、森から来ている。'],
-    ['34:32','見出し（横組み）',45,2243,510,'sans',400,24,140,'left','#1a1a1a',true,'ジオパックは長年、紙と向き合ってきました。'],
-    ['16:13','説明（横組み）',45,2307,510,'sans',300,24,170,'left','#1a1a1a',true,'長年、紙と向き合ってきた会社が、\nコーヒーの袋を紙でつくる理由。\n人から人へ物が渡るとき、\n包材は必ずそこにある。\nだから、できるだけ環境に影響の少ない\nものにしたい。\n紙にできることを、増やしていく。'],
-    ['16:10','無地',270,1400,100,'sans',300,16,'auto','left','#1a1a1a',false,'無地'],
+  {no:'3', id:'186:44', kind:'fixF', w:1250, h:1600, name:'什器 F｜天面の展示物と、座布団に直接印刷するキャプション', texts:[
+    ['190:4','座布団 概要 見出し',40,664,600,'sans',500,26,140,'left','#1a1a1a',true,'GeoPosting Pack'],
+    ['190:5','座布団 概要 本文',40,706,600,'sans',400,16,165,'left','#1a1a1a',true,'店頭で自立し、そのままポストへ。\n紙の手触りを、比べてください。'],
+    ['187:6','01 製品名（印刷しない）',40,800,1170,'sans',500,15,140,'left','#6b6b68',false,'01  Tomorrow Bag 1.0｜上質紙'],
+    ['187:10','01 A面（通路側）見出し',40,826,560,'serif',500,20,140,'left','#1a1a1a',true,'さらりと、素直な紙の手触り。'],
+    ['187:11','01 A面（通路側）本文',40,858,560,'sans',400,13,165,'left','#1a1a1a',true,'光沢を抑えた、落ち着いた表情。\n指先でなぞると、紙らしいさらりとした感触が伝わります。'],
+    ['187:14','01 B面（奥側）見出し',640,826,560,'serif',500,20,140,'left','#1a1a1a',true,'さらり、となめらか。その違いを。'],
+    ['187:15','01 B面（奥側）本文',640,858,560,'sans',400,13,165,'left','#1a1a1a',true,'指の腹で表面をゆっくりなぞってみてください。\n晒片艶紙と、光の映り方や指すべりを比べられます。'],
+    ['187:17','02 製品名（印刷しない）',40,1000,1170,'sans',500,15,140,'left','#6b6b68',false,'02  Future bio Bag｜晒片艶紙'],
+    ['187:21','02 A面（通路側）見出し',40,1026,560,'serif',500,20,140,'left','#1a1a1a',true,'すべすべと、ほのかな艶。'],
+    ['187:22','02 A面（通路側）本文',40,1058,560,'sans',400,13,165,'left','#1a1a1a',true,'なめらかな面に、やわらかな光。\n白い紙のすっきりした表情と、指先のすべりを感じてください。'],
+    ['187:25','02 B面（奥側）見出し',640,1026,560,'serif',500,20,140,'left','#1a1a1a',true,'同じ紙でも、袋になると。'],
+    ['187:26','02 B面（奥側）本文',640,1058,560,'sans',400,13,165,'left','#1a1a1a',true,'Tomorrow Bag 3.0の晒片艶紙と持ち比べてみてください。\n表面の手触りに加え、袋全体のしなやかさにも目を向けて。'],
+    ['187:28','03 製品名（印刷しない）',40,1200,1170,'sans',500,15,140,'left','#6b6b68',false,'03  Tomorrow Bag 3.0｜晒片艶紙'],
+    ['187:32','03 A面（通路側）見出し',40,1226,560,'serif',500,20,140,'left','#1a1a1a',true,'なめらかな白に、触れる。'],
+    ['187:33','03 A面（通路側）本文',40,1258,560,'sans',400,13,165,'left','#1a1a1a',true,'指先がすっとすべる、なめらかな紙肌。\n角度を変えると見える控えめな艶も、この紙の表情です。'],
+    ['187:36','03 B面（奥側）見出し',640,1226,560,'serif',500,20,140,'left','#1a1a1a',true,'同じ3.0、紙肌はふた通り。'],
+    ['187:37','03 B面（奥側）本文',640,1258,560,'sans',400,13,165,'left','#1a1a1a',true,'晒クレープ紙（タウパー）と、表面をなぞり比べてください。\nなめらかな面と細かな凹凸で、手にした印象が変わります。'],
+    ['187:39','04 製品名（印刷しない）',40,1400,1170,'sans',500,15,140,'left','#6b6b68',false,'04  Tomorrow Bag 3.0｜晒クレープ紙（タウパー）'],
+    ['187:43','04 A面（通路側）見出し',40,1426,560,'serif',500,20,140,'left','#1a1a1a',true,'細かな凹凸、やわらかな表情。'],
+    ['187:44','04 A面（通路側）本文',40,1458,560,'sans',400,13,165,'left','#1a1a1a',true,'クレープの細かなシワが、指先に伝わる紙肌。\n光をやわらかく受け止め、豊かな風合いを見せます。'],
+    ['187:47','04 B面（奥側）見出し',640,1426,560,'serif',500,20,140,'left','#1a1a1a',true,'目で見て、指先でも感じる。'],
+    ['187:48','04 B面（奥側）本文',640,1458,560,'sans',400,13,165,'left','#1a1a1a',true,'表面をそっとなぞり、細かなシワの感触を確かめてください。\n晒片艶紙のなめらかさと比べると、違いがよく分かります。'],
   ]},
-  {no:'2', id:'3:2', kind:'roll', w:600, h:4000, name:'F 左ロール（Fに向く面）｜はたらく袋', texts:[
-    ['11:7','キャッチコピー（縦組み）',30,2013,200,'serif',500,180,104,'center','#1a1a1a',true,'守\nる'],
-    ['11:6','ラベル',255,2071,310,'sans',400,16,130,'left','#1a1a1a',true,'はたらく袋 01｜守る'],
-    ['11:8','見出し（横組み）',255,2102,310,'serif',400,30,140,'left','#1a1a1a',true,'紙なのに、ここまで守れる。'],
-    ['11:9','説明（横組み）',255,2206,310,'sans',400,18,170,'left','#1a1a1a',true,'香りを逃がさない。酸素を近づけない。アルミを使わない紙のパッケージが、焙煎したての香りを、届く日まで守ります。'],
+  {no:'6', id:'32:17', kind:'fixG', w:1250, h:600, name:'什器 G｜天面の展示物（投函体験）｜文言は未作成', texts:[
   ]},
-  {no:'3', id:'32:2', kind:'disp', w:600, h:4000, name:'什器 F｜正面（通路側から見る）台の上の展示物のみ', texts:[
+  {no:'9', id:'32:32', kind:'fixH', w:1250, h:600, name:'什器 H｜天面の展示物（紙見本帳・紙 3 種）｜文言は未作成', texts:[
   ]},
-  {no:'4', id:'2:2', kind:'roll', w:600, h:4000, name:'F 右ロール（Fに向く面）｜ジオパックストーリー', texts:[
-    ['11:3','キャッチコピー（横組み）',45,1971,510,'serif',500,180,100,'right','#1a1a1a',true,'守る'],
-    ['11:2','ラベル',45,2181,510,'sans',400,16,130,'left','#1a1a1a',true,'GEOPACK STORY 01｜守る'],
-    ['11:4','見出し（横組み）',45,2212,510,'serif',400,30,140,'left','#1a1a1a',true,'自然由来の素材で、しっかり守る。'],
-    ['11:5','説明（横組み）',45,2274,510,'sans',400,18,170,'left','#1a1a1a',true,'自然由来の素材をメインに使いながら、お客様がこだわった商品をしっかり守る袋にしたい。その想いから生まれたのが、アルミを使わずに香りを守る高バリア紙 TG-X3。長年、紙と向き合ってきた会社の答えです。'],
+  {no:'14', id:'93:8', kind:'wallA', w:1250, h:2300, name:'背面 a｜掲示パネル ＋ コーヒー以外の商材 6 袋｜パネル文言は未作成', texts:[
   ]},
-  {no:'5', id:'3:34', kind:'roll', w:600, h:4000, name:'G 左ロール（Gに向く面）｜はたらく袋', texts:[
-    ['11:15','キャッチコピー（縦組み）',30,2013,200,'serif',500,180,104,'center','#1a1a1a',true,'届\nく'],
-    ['11:14','ラベル',255,2071,310,'sans',400,16,130,'left','#1a1a1a',true,'はたらく袋 02｜届く'],
-    ['11:16','見出し（横組み）',255,2102,310,'serif',400,30,140,'left','#1a1a1a',true,'届くまで、責任を持てる。'],
-    ['11:17','説明（横組み）',255,2206,310,'sans',400,18,170,'left','#1a1a1a',true,'ポストに入る厚み。自立して立つ底。豆を詰めた袋が、そのまま郵便受けまで届く。再配達も、送料も、CO2も減らします。'],
+  {no:'15', id:'93:10', kind:'wallB', w:1250, h:2300, name:'背面 b｜掲示パネル ＋ デジタル印刷の実例 5 袋｜パネル文言は未作成', texts:[
   ]},
-  {no:'6', id:'32:17', kind:'disp', w:600, h:4000, name:'什器 G｜正面（通路側から見る）台の上の展示物のみ', texts:[
+  {no:'16', id:'93:12', kind:'wallC', w:1250, h:2300, name:'背面 c｜陳列棚 3 段（無地袋・花柄／販売）｜文言は未作成', texts:[
   ]},
-  {no:'7', id:'3:18', kind:'roll', w:600, h:4000, name:'G 右ロール（Gに向く面）｜ジオパックストーリー', texts:[
-    ['11:11','キャッチコピー（横組み）',45,1987,510,'serif',500,180,100,'right','#1a1a1a',true,'届く'],
-    ['11:10','ラベル',45,2197,510,'sans',400,16,130,'left','#1a1a1a',true,'GEOPACK STORY 02｜届く'],
-    ['11:12','見出し（横組み）',45,2228,510,'serif',400,30,140,'left','#1a1a1a',true,'届き方まで、設計する。'],
-    ['11:13','説明（横組み）',45,2290,510,'sans',400,18,170,'left','#1a1a1a',true,'袋の仕事は、詰めたら終わりではありません。ポストに入る厚み、自立する底、開けやすさ。届く場面を思い浮かべながら寸法を決め、投函テストを重ねる。「包材を進化させる会社」として、届き方から袋をつくっています。'],
-  ]},
-  {no:'8', id:'3:66', kind:'roll', w:600, h:4000, name:'H 左ロール（Hに向く面）｜はたらく袋', texts:[
-    ['11:23','キャッチコピー（縦組み）',30,1920,200,'serif',500,180,104,'center','#1a1a1a',true,'伝\nえ\nる'],
-    ['11:22','ラベル',255,2071,310,'sans',400,16,130,'left','#1a1a1a',true,'はたらく袋 03｜伝える'],
-    ['11:24','見出し（横組み）',255,2102,310,'serif',400,30,140,'left','#1a1a1a',true,'手触りを、よく確かめる。'],
-    ['11:25','説明（横組み）',255,2206,310,'sans',400,18,170,'left','#1a1a1a',true,'マットな質感、やわらかな色、手にしたときの温度。紙の表情が、豆のキャラクターと、ブランドの姿勢を伝えます。'],
-  ]},
-  {no:'9', id:'32:32', kind:'disp', w:600, h:4000, name:'什器 H｜正面（通路側から見る）台の上の展示物のみ', texts:[
-  ]},
-  {no:'10', id:'3:50', kind:'roll', w:600, h:4000, name:'H 右ロール（Hに向く面）｜ジオパックストーリー', texts:[
-    ['11:19','キャッチコピー（横組み）',30,1987,540,'serif',500,180,100,'right','#1a1a1a',true,'伝える'],
-    ['11:18','ラベル',45,2197,510,'sans',400,16,130,'left','#1a1a1a',true,'GEOPACK STORY 03｜伝える'],
-    ['11:20','見出し（横組み）',45,2228,510,'serif',400,30,140,'left','#1a1a1a',true,'紙の表情を、そのまま渡す。'],
-    ['11:21','説明（横組み）',45,2290,510,'sans',400,18,170,'left','#1a1a1a',true,'紙には、素材ごとに表情があります。その魅力を殺さないように、水性インキの表刷りデジタル印刷を選びました。必要な分だけ刷るから、つくりすぎない。日本の自社工場で、紙の可能性を最大限に引き出す——それが私たちのこだわりです。'],
-  ]},
-  {no:'11', id:'16:14', kind:'outer', w:600, h:4000, name:'一番右の外側ロール（右から来る人・入口側に向く面）｜姿勢', texts:[
-    ['16:23','ラベル',45,1862,510,'hand',400,24,'auto','left','#1a1a1a',true,'GeoPosting Pack'],
-    ['16:24','キャッチコピー（横組み）',45,1900,510,'serif',500,64,140,'left','#1a1a1a',true,'包み方で、\nブランドの\n姿勢を示す。'],
-    ['16:25','説明（横組み）',45,2230,510,'sans',400,24,170,'left','#1a1a1a',true,'産地を選び、焙煎を決め、抽出を整える。\nそこまで手をかけたコーヒーを、\n最後に何で包むか。\nパッケージは中身を守る道具であると同時に、ブランドが何を大事にしているかを\n静かに語る存在です。'],
-    ['16:22','無地',270,1400,100,'sans',300,16,'auto','left','#1a1a1a',false,'無地'],
+  {no:'17', id:'93:14', kind:'wallM', w:1250, h:2300, name:'背面 d｜50 インチ モニター（ゲストブリュー）｜文言は未作成', texts:[
   ]},
   {no:'21', id:'11:26', kind:'island', w:600, h:600, name:'アイランド 右下（アクリルケース・土と分解途中の袋）｜つなぐ — 上から見た面（天面）', texts:[
     ['11:39','キャッチコピー つなぐ（白・横組み）',30,30,300,'serif',500,30,105,'left','#ffffff',true,'つなぐ'],
@@ -328,14 +373,24 @@ const FACES = [
     ['11:36','段階 24h',350,278,80,'sans',300,10,'auto','left','#ffffff',false,'24h'],
     ['11:38','段階 土へ',490,278,80,'sans',300,10,'auto','left','#ffffff',false,'土へ'],
   ]},
+  {no:'22', id:'155:5', kind:'island2', w:620, h:800, name:'アイランド 左下（オリジナル印刷）｜9 袋 ＋ 四隅キャプション C1〜C4 — 上から見た面', texts:[
+    ['204:26','C4 奥左　4／4 だから、複数デザイン｜見出し',10,14,290,'serif',500,13,140,'left','#1a1a1a',true,'同じ注文で、デザインを変えられる。'],
+    ['204:27','C4 奥左　4／4 だから、複数デザイン｜本文',10,34,290,'sans',400,9,165,'left','#1a1a1a',true,'版がないので、1 回の注文の中で柄を分けられます。銘柄ごと、季節ごと、コラボごと。ここに並ぶ 9 枚も、すべて違うデザインです。'],
+    ['204:20','C3 奥右　3／4 だから、小ロット｜見出し',320,14,290,'serif',500,13,140,'right','#1a1a1a',true,'版がいらないから、少なくても刷れる。'],
+    ['204:21','C3 奥右　3／4 だから、小ロット｜本文',320,34,290,'sans',400,9,165,'right','#1a1a1a',true,'デジタル印刷は版をつくりません。版代がかからないぶん、まとまった枚数を刷らなくても、お店だけのパッケージがつくれます。'],
+    ['204:8','C1 前左　1／4 紙であること｜見出し',10,704,290,'serif',500,13,140,'left','#1a1a1a',true,'この袋は、紙でできています。'],
+    ['204:9','C1 前左　1／4 紙であること｜本文',10,724,290,'sans',400,9,165,'left','#1a1a1a',true,'フィルムのような光沢ではなく、光をやわらかく受ける表面。インクがのると、色も落ち着いた風合いで出ます。'],
+    ['204:14','C2 前右　2／4 いちばん外側が紙｜見出し',320,704,290,'serif',500,13,140,'right','#1a1a1a',true,'いちばん外側が紙。だから、直接刷れる。'],
+    ['204:15','C2 前右　2／4 いちばん外側が紙｜本文',320,724,290,'sans',400,9,165,'right','#1a1a1a',true,'ラベルや印刷したフィルムを貼っているのではありません。いちばん外の層が紙なので、袋の表面にそのままデジタル印刷ができます。'],
+  ]},
 ];
-const CROP = { text:{ roll:[1900,2620], outer:[1840,2620], disp:[2700,3300], island:[0,600] }, print:{ roll:[1150,3250], outer:[1150,3960], disp:[2700,4000], island:[0,600] } };
+const CROP = { text:{ fixF:[620,1600], fixG:[0,600], fixH:[0,600], wallA:[0,2300], wallB:[0,2300], wallC:[0,2300], wallM:[0,2300], island:[0,600], island2:[0,800] }, print:{ fixF:[0,624], fixG:[0,600], fixH:[0,600], wallA:[0,2300], wallB:[0,2300], wallC:[0,2300], wallM:[0,2300], island:[0,600], island2:[0,800] } };
 const FONT = { sans:'"Noto Sans JP",sans-serif', serif:'"Noto Serif JP",serif', hand:'"Segoe Script","Bradley Hand",cursive' };
 
 /* ===== 状態 ===== */
 const $ = (s, el=document) => el.querySelector(s);
 const state = {
-  cur: '2', zoom: 'text', role: 'staff', myname: '',
+  cur: '3', zoom: 'text', role: 'staff', myname: '',
   docs: {},        // faces/{no}      → {texts, updatedAt, updatedBy, comments, log}
   approvals: {},   // approvals/{no}  → {items:{nodeId:{ok, by, at, text, figma, error, syncedAt}}}
   baseline: null,  // meta/baseline   → {texts:{nodeId:string}} Figma に最後に反映した文言
@@ -372,12 +427,13 @@ const k = id => id.replace(':','_');
 const whoName = () => state.myname || '専務';
 
 /* ===== 面セレクタ ===== */
+const grp = k => k.slice(0,3) === 'fix' ? '什器' : (k.slice(0,4) === 'wall' ? '壁面' : 'アイランド');
 function facesSig(){ return FACES.map(f => [f.no === state.cur ? 1 : 0, faceAllOk(f) ? 1 : 0, faceAllChecked(f) ? 1 : 0, (hasDiff(f) || hasUnsaved(f)) ? 1 : 0, (state.docs[f.no] && state.docs[f.no].comments && state.docs[f.no].comments.length) ? 1 : 0].join('')).join(','); }
 function renderFaces(){
   const sig = facesSig(); if (renderFaces.last === sig) return; renderFaces.last = sig;
   const nav = $('#faces'); nav.innerHTML = '';
   FACES.forEach((f, i) => {
-    if (f.kind === 'island' && i > 0 && FACES[i-1].kind !== 'island') { const s = document.createElement('span'); s.className='sep'; nav.appendChild(s); }
+    if (i > 0 && grp(f.kind) !== grp(FACES[i-1].kind)) { const s = document.createElement('span'); s.className='sep'; nav.appendChild(s); }
     const b = document.createElement('button'); b.type='button'; b.textContent = f.no; b.title = f.name;
     if (f.no === state.cur) b.classList.add('on');
     if (faceAllOk(f)) { const ok = document.createElement('span'); ok.className='ok'; ok.textContent = '✓'; ok.title='専務 確認済'; b.appendChild(ok); }
@@ -401,13 +457,14 @@ function renderPreview(){
   fr.style.width = face.w + 'px'; fr.style.height = face.h + 'px'; fr.style.background = FRAME_BG;
   const fillOf = kk => ({ roll:'var(--roll)', stage:'var(--stage)', soil:'var(--soil)', bag:'var(--bag)' })[kk] || 'transparent';
   for (const r of RECTS[face.kind]) {
-    const [kind,x,y,w,h,fill,sw,name] = r;
+    const [kind,x,y,w,h,fill,sw,name,rot] = r;
     const el = document.createElement('div'); el.className='r'; el.title = name;
     el.style.left = x+'px'; el.style.top = y+'px'; el.style.width = w+'px';
     el.style.height = (kind==='l' ? 0 : h) + 'px';
     el.style.background = fillOf(fill);
     if (kind === 'e') el.style.borderRadius = '50%';
     if (kind === 'l') { el.style.borderTopWidth = sw+'px'; } else { el.style.borderWidth = sw+'px'; }
+    if (rot) { el.style.transformOrigin = '0 0'; el.style.transform = 'rotate(' + rot + 'deg)'; }
     if (name === '印刷範囲') { el.style.borderStyle = 'dashed'; el.style.opacity = .5; }
     fr.appendChild(el);
   }
@@ -425,7 +482,7 @@ function renderPreview(){
   }
   $('#pname').textContent = `${face.no}｜${face.name}`;
   ['text','print','all'].forEach(z => $('#zoom' + z[0].toUpperCase() + z.slice(1)).classList.toggle('on', state.zoom === z));
-  $('#zoomPrint').textContent = face.kind === 'island' ? '600角' : '什器まわり';
+  $('#zoomPrint').textContent = grp(face.kind) === 'アイランド' ? '600角' : (grp(face.kind) === '壁面' ? '壁面' : '天面');
   fitPreview();
 }
 function fitPreview(){
@@ -441,7 +498,7 @@ function fitPreview(){
   fr.style.transform = `scale(${s})`;
   fr.style.left = Math.max(0, (W - face.w*s)/2) + 'px';
   fr.style.top = (-y0*s + Math.max(0, (H - ch)/2)) + 'px';
-  $('#flnote').textContent = (face.kind === 'island' ? 'アイランド 600角' : 'ロール幅 600・FL = 通路床基準') + `　1px = 1mm　縮尺 ${(s*100).toFixed(0)}%`;
+  $('#flnote').textContent = (grp(face.kind) === 'アイランド' ? 'アイランド 600角（上＝奥／下＝通路）' : grp(face.kind) === '壁面' ? '背面 1 面 1250 幅・FL = 床基準' : '什器天面 1250×600（上＝奥／下＝通路）') + `　1px = 1mm　縮尺 ${(s*100).toFixed(0)}%`;
 }
 new ResizeObserver(fitPreview).observe($('#stage'));
 [['zoomText','text'],['zoomPrint','print'],['zoomAll','all']].forEach(([id,z]) => $('#'+id).addEventListener('click', () => { state.zoom = z; try{localStorage.setItem('scaj_zoom', z)}catch(e){}; renderPreview(); }));
@@ -487,7 +544,7 @@ function renderEditor(){
       <details class="more"><summary>詳細${changed ? '<span class="w">Figma と違う</span>' : ''}</summary><div class="fig">${info.join('<br>')}</div></details>
     </div>`;
   };
-  html += printed.length ? `<div class="grp">${printed.map(t => fld(t, false)).join('')}</div>` : '<div class="note">この面は文字を入れず、現物と札で見せる面です。</div>';
+  html += printed.length ? `<div class="grp">${printed.map(t => fld(t, false)).join('')}</div>` : '<div class="note">この面の文言はまだ登録されていません。決まり次第ここに追加します。</div>';
   if (memos.length) html += `<details class="grp memo"><summary class="gl">▸ その他の注記（印刷されない）</summary>${memos.map(t => fld(t, true)).join('')}</details>`;
 
   const cs = (doc.comments || []);
@@ -642,30 +699,37 @@ document.addEventListener('focusout', e => {
   }
 });
 
-/* ===== ロール部分の平面図（通路側の什器列だけ・上が什器、下が通路） ===== */
-const MAP_MARK = { '1':[-330,5150], '2':[520,4950], '3':[925,6330], '4':[1330,4950], '5':[1770,4950], '6':[2175,6330], '7':[2580,4950], '8':[3020,4950], '9':[3425,6330], '10':[3830,4950], '11':[4360,4950],
-  '12':[6380,6330], '13':[6380,4950], '19':[-330,5850], '21':[5100,4950] };
-const MAP_NAME = { '12':'帯②｜通路から見える面', '13':'帯②｜ブース内から見える面', '19':'柱 木目部｜原紙サンプル' };
+/* ===== ブース平面図（什器列・背面 壁面・アイランド／上が背面、下が通路） ===== */
+const MAP_MARK = { '3':[925,6330], '6':[2175,6330], '9':[3425,6330],
+  '14':[978,-260], '15':[2326,-260], '16':[3678,-260], '17':[5026,-260],
+  '21':[4700,3700], '22':[1300,3700] };
+const MAP_NAME = {};
 function renderMap(){
   const svg = $('#mapSvg'); if (!svg) return;
   const msig = state.cur + '|' + FACES.map(f => faceAllOk(f) ? 1 : 0).join(''); if (renderMap.last === msig && svg.childNodes.length) return; renderMap.last = msig;
   const r = (x,y,w,h,c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${c}"/>`;
   const tx = (x,y,s,c='lab',a='start') => `<text x="${x}" y="${y}" class="${c}" text-anchor="${a}">${esc(s)}</text>`;
   let g = '';
-  g += `<line x1="-600" y1="6000" x2="6500" y2="6000" class="thin"/>`;            // ブース前端
+  g += r(0,0,6000,6000,'thin');                                                  // ブース 6000 角
+  g += `<line x1="-600" y1="6000" x2="6600" y2="6000" class="thin"/>`;           // ブース前端
+  // 背面 壁面 a〜d
+  [[352,'a'],[1700,'b'],[3052,'c'],[4400,'d']].forEach(([x,l]) => {
+    g += r(x,0,1252,300,'fill') + r(x,0,1252,300,'thin') + tx(x+626,200,'背面 '+l,'lab b','middle');
+  });
+  // 什器 F・G・H（通路側）
   g += r(0,5400,250,600,'fill') + r(0,5400,250,600,'thin') + r(5750,5400,250,600,'fill') + r(5750,5400,250,600,'thin');
   g += tx(125,6260,'柱a','lab','middle') + tx(5875,6260,'柱b','lab','middle');
   [[300,'F'],[1550,'G'],[2800,'H']].forEach(([x,l]) => { g += r(x,5400,1250,600,'thin') + r(x+300,5400,650,600,'roll') + tx(x+625,5760,'什器 '+l,'lab b','middle'); });
-  [275,1550,2800,4075].forEach(x => { g += `<circle cx="${x}" cy="5700" r="60" class="ln"/>`; });
-  [300,1525,1550,2775,2800,4025,225,4110].forEach(x => { g += r(x,5400,25,600,'fill'); });
-  g += r(5690,5400,25,600,'fill') + tx(5702,5330,'帯②','lab','middle');
   g += r(4450,5400,1200,600,'thin') + tx(5050,5760,'入口','lab','middle');
-  g += tx(2200,6720,'通路（お客様はこちらから見る）','lab b','middle');
-  g += tx(5100,4680,'アイランド右下（H の奥）','lab','middle');
+  // アイランド 2 台ともぐくる
+  g += r(1000,3400,600,600,'thin') + tx(1300,4230,'アイランド左下','lab','middle');
+  g += r(4400,3400,600,600,'thin') + tx(4700,4230,'アイランド右下','lab','middle');
+  g += r(2552,1452,800,600,'fill') + r(2552,1452,800,600,'thin') + tx(2952,1800,'もぐくる','lab','middle');
+  g += tx(3000,6720,'通路（お客様はこちらから見る）','lab b','middle');
   Object.entries(MAP_MARK).forEach(([no,[x,y]]) => {
     const f = faceOf(no); const on = no === state.cur;
     const cls = 'mk' + (f ? '' : ' ghost') + (on ? ' on' : '') + (f && faceAllOk(f) ? ' okd' : '');
-    const title = f ? `${no}｜${f.name}` : `${no}｜${MAP_NAME[no] || ''}（このページには未収録）`;
+    const title = f ? `${no}｜${f.name}` : `${no}（このページには未収録）`;
     g += `<g class="${cls}" data-no="${no}"><title>${esc(title)}</title><circle cx="${x}" cy="${y}" r="175"/><text x="${x}" y="${y}">${no}</text></g>`;
   });
   svg.innerHTML = g;
