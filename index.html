@@ -210,7 +210,7 @@
     <div class="editor" id="editor" aria-label="文言の編集"></div>
     <div class="actbar" id="actbar">
       <div class="who">
-        <label for="myname">名前</label><select id="myname"><option>専務</option><option>荻野</option><option>スタッフ</option></select>
+        <label for="myname">名前</label><select id="myname"><option>専務</option><option>スタッフ</option></select>
         
       </div>
       <button type="button" id="saveBtn" class="primary">保存</button>
@@ -231,29 +231,30 @@ const OUTER = { fixF:'什器 F 天板 600 × 650mm（下が通路側）', fixG:'
   island:'アイランド 右下 天面 600 角', island2:'アイランド 左下 天面 600 角' };
 const RECTS = {
   fixF: [
-    ['r',100,600,220,100,'bag',1,'袋 S 1'],
-    ['r',360,600,220,100,'bag',1,'袋 S 2'],
-    ['r',620,600,220,100,'bag',1,'袋 S 3'],
-    ['r',880,600,220,100,'bag',1,'袋 S 4'],
-    ['r',452,850,296,210,null,1.5,'置き札 E1'],
-    ['r',390,40,420,80,null,1.5,'バリア値 POP'],
+    ['r',50,75,1100,370,'roll',1,'座布団B｜印刷事例4点・550×185mm'],
+    ['r',50,195,340,180,'bag',1,'印刷事例｜middle coffee'],
+    ['r',320,195,220,100,'bag',1,'印刷事例｜NODE'],
+    ['r',570,195,310,100,'bag',1,'印刷事例｜GEOPACK COFFEE'],
+    ['r',900,195,220,100,'bag',1,'印刷事例｜GeoPosting Pack'],
+    ['r',50,850,1100,370,'roll',1,'座布団A｜サイズ比較4点・550×185mm'],
+    ['r',50,890,240,148,'bag',1,'サイズ XS'],
+    ['r',300,890,220,100,'bag',1,'サイズ S'],
+    ['r',530,890,310,100,'bag',1,'サイズ M'],
+    ['r',840,890,340,180,'bag',1,'サイズ L'],
   ],
   fixG: [
-    ['r',180,90,720,140,'stage',1.5,'配送箱A 外寸（S×3）'],
-    ['r',190,100,700,120,'roll',1,'配送箱A 内寸 W350×D60'],
-    ['r',180,300,720,140,'stage',1.5,'配送箱B 外寸（M×2）'],
-    ['r',190,310,700,120,'roll',1,'配送箱B 内寸 W350×D60'],
-    ['r',200,110,220,100,'bag',1,'袋 S 110×50 ①'],
-    ['r',430,110,220,100,'bag',1,'袋 S 110×50 ②'],
-    ['r',660,110,220,100,'bag',1,'袋 S 110×50 ③'],
-    ['r',216,320,310,100,'bag',1,'袋 M 155×50 ①'],
-    ['r',554,320,310,100,'bag',1,'袋 M 155×50 ②'],
-    ['r',180,510,240,148,'bag',1,'袋 XS 120×74（参考展示）'],
-    ['r',520,510,340,180,'bag',1,'袋 L 170×90（参考展示・寝かせる）'],
-    ['r',300,800,600,120,null,1.5,'口金 300×60'],
-    ['r',330,830,540,60,'stage',1,'開口 270×30'],
-    ['r',2,780,296,210,null,1.5,'置き札 E2（A6横）'],
-    ['r',300,1010,600,200,null,1.5,'キャプションボード E3（W300×H100・口金と同じ横幅）'],
+    ['r',40,60,520,700,'stage',1.5,'配送箱A 外寸 W260×D350（S×3）'],
+    ['r',50,70,500,680,'roll',1,'配送箱A 内寸 W250×D340×H30'],
+    ['r',640,60,520,700,'stage',1.5,'配送箱B 外寸 W260×D350（M×2）'],
+    ['r',650,70,500,680,'roll',1,'配送箱B 内寸 W250×D340×H30'],
+    ['r',85,80,430,220,'bag',1,'袋 S 110×215 ①'],
+    ['r',85,300,430,220,'bag',1,'袋 S 110×215 ②'],
+    ['r',85,520,430,220,'bag',1,'袋 S 110×215 ③'],
+    ['r',685,100,430,310,'bag',1,'袋 M 155×215 ①'],
+    ['r',685,420,430,310,'bag',1,'袋 M 155×215 ②'],
+    ['r',300,880,600,120,null,1.5,'口金 300×60'],
+    ['r',330,910,540,60,'stage',1,'開口 270×30'],
+    ['r',300,1049,600,105,null,1.5,'キャプションボード（口金と同じ横幅 W300）'],
   ],
   fixH: [
     ['r',40,100,820,550,'roll',1,'平置き座布団｜袋5枚＋概要キャプションを直接印刷'],
@@ -352,27 +353,37 @@ const RECTS = {
 };
 // text: [nodeId, レイヤー名, x, y, w, font(sans|serif|hand), weight, size, lineHeight%('auto'), align, color, 印刷される文言か, 文字列]
 const FACES = [
-  {no:'3', id:'151:5', kind:'fixF', w:1200, h:1300, name:'什器 F｜天面（1:5）守る／袋 4 点すべて S・置き札 E1・バリア値 POP', texts:[
-    ['fixF-n0','袋4点／すべてS（W110×H215×D50）で素材の違',60,304,1080,'sans',300,20,150,'center','#6b6b68',false,'袋4点／すべてS（W110×H215×D50）で素材の違いを比較'],
-    ['fixF-n1','① Tomorrow Bag 1.0',70,432,280,'sans',300,20,150,'center','#6b6b68',false,'① Tomorrow Bag 1.0\n紙バリア'],
-    ['fixF-n2','② Tomorrow Bag 2.0',330,432,280,'sans',300,20,150,'center','#6b6b68',false,'② Tomorrow Bag 2.0\nアルミ蒸着紙'],
-    ['fixF-n3','③ TG-X3（3.0）',590,432,280,'sans',300,20,150,'center','#6b6b68',false,'③ TG-X3（3.0）\n標準紙'],
-    ['fixF-n4','④ TG-X3（3.0）',850,432,280,'sans',300,20,150,'center','#6b6b68',false,'④ TG-X3（3.0）\n晒クレープ紙（タウパー）'],
-    ['fixF-n5','袋の前面ライン：前縁から300',60,716,1080,'sans',300,20,150,'center','#6b6b68',false,'袋の前面ライン：前縁から300'],
-    ['fixF-n6','置き札 E1（A6横）',452,942,296,'sans',300,20,150,'center','#6b6b68',false,'置き札 E1（A6横）'],
-    ['fixF-n7','バリア値 POP（A5横・立て）',300,182,600,'sans',300,20,150,'center','#6b6b68',false,'バリア値 POP（A5横・立て）'],
+  {no:'3', id:'151:5', kind:'fixF', w:1200, h:1300, name:'什器 F｜天面（1:5）守る — サイズとブランドの印象を選ぶ（サイズ比較4点＋印刷事例4点）', texts:[
+    ['227:2','反対側 見出し（図面ラベル）',50,25,1100,'sans',500,22,140,'left','#1a1a1a',false,'反対側｜守る — ブランドの印象を包む'],
+    ['233:2','反対側 守る 見出し',55,383,620,'sans',500,18,140,'left','#1a1a1a',true,'刷っても、守る力は変わらない。',180],
+    ['233:3','反対側 守る 本文',55,412,1090,'sans',400,15,140,'left','#1a1a1a',true,'いちばん外の層が紙だから、袋の表面に直接デジタル印刷ができます。印刷がのるのは外側だけ。中身を守る内側の層はそのままです。',180],
+    ['227:5','印刷事例 1 見出し',385,120,330,'sans',500,18,140,'left','#1a1a1a',true,'middle coffee',180],
+    ['227:6','印刷事例 1 本文',385,167,330,'sans',400,15,140,'left','#1a1a1a',true,'黒1色。余白を生かした、静かで端正な表現。',180],
+    ['227:8','印刷事例 2 見出し',535,120,210,'sans',500,18,140,'left','#1a1a1a',true,'NODE',180],
+    ['227:9','印刷事例 2 本文',535,167,210,'sans',400,15,140,'left','#1a1a1a',true,'ロゴを主役に、素材の白さを生かした表現。',180],
+    ['227:11','印刷事例 3 見出し',875,120,300,'sans',500,18,140,'left','#1a1a1a',true,'GEOPACK COFFEE',180],
+    ['227:12','印刷事例 3 本文',875,167,300,'sans',400,15,140,'left','#1a1a1a',true,'細密な線画を全面に。紙面を柄として見せる。',180],
+    ['227:14','印刷事例 4 見出し',1115,120,210,'sans',500,18,140,'left','#1a1a1a',true,'GeoPosting Pack',180],
+    ['227:15','印刷事例 4 本文',1115,167,210,'sans',400,15,140,'left','#1a1a1a',true,'写真と色彩で、商品の世界観を強く伝える。',180],
+    ['227:16','通路側 見出し（図面ラベル）',40,790,1100,'sans',500,22,140,'left','#1a1a1a',false,'通路側｜守る — 内容物に合うサイズを選ぶ'],
+    ['227:30','通路側 守る 見出し',55,1095,620,'sans',500,18,140,'left','#1a1a1a',true,'中身を守る、ちょうどいいサイズ。'],
+    ['227:31','通路側 守る 本文',55,1127,850,'sans',400,15,140,'left','#1a1a1a',true,'内容量に合う袋を選ぶことが、豆を守り、配送の負担も抑えます。'],
+    ['227:19','サイズ XS 名称',55,1157,230,'sans',500,30,140,'left','#1a1a1a',true,'XS'],
+    ['227:20','サイズ XS 寸法',55,1195,230,'sans',400,15,140,'left','#1a1a1a',true,'W120×H150×D74'],
+    ['227:22','サイズ S 名称',305,1157,210,'sans',500,30,140,'left','#1a1a1a',true,'S'],
+    ['227:23','サイズ S 寸法',305,1195,210,'sans',400,15,140,'left','#1a1a1a',true,'W110×H215×D50'],
+    ['227:25','サイズ M 名称',535,1157,300,'sans',500,30,140,'left','#1a1a1a',true,'M'],
+    ['227:26','サイズ M 寸法',535,1195,300,'sans',400,15,140,'left','#1a1a1a',true,'W155×H215×D50'],
+    ['227:28','サイズ L 名称',845,1157,330,'sans',500,30,140,'left','#1a1a1a',true,'L'],
+    ['227:29','サイズ L 寸法',845,1195,330,'sans',400,15,140,'left','#1a1a1a',true,'W170×H215×D90'],
   ]},
-  {no:'6', id:'151:9', kind:'fixG', w:1200, h:1300, name:'什器 G｜天面（1:5）届く／投函体験・XS S M ＋ L・置き札 E2・小札 E3', texts:[
-    ['fixG-n0','ポスト投函 1 通に何袋おさまるか',60,10,1080,'sans',300,22,140,'center','#6b6b68',false,'ポスト投函の 1 通（長辺 34cm × 短辺 25cm × 厚さ 3cm）に、何袋おさまるか'],
-    ['fixG-n1','S は 3 つ',180,36,720,'sans',300,20,140,'center','#6b6b68',false,'S（W110 × H215）なら 3 つ　―　横に並べて 330mm。長辺 34cm におさまる'],
-    ['fixG-n2','M は 2 つ',180,246,720,'sans',300,20,140,'center','#6b6b68',false,'M（W155 × H215）なら 2 つ　―　横に並べて 310mm。同じ 1 通におさまる'],
-    ['fixG-n3','XS 参考展示',180,670,320,'sans',300,20,140,'center','#6b6b68',false,'XS（W120 × H150）　参考展示'],
-    ['fixG-n4','L 参考展示',870,520,310,'sans',300,20,140,'left','#6b6b68',false,'L（W170 × H215 × D90）\nポスト投函 非対応（宅配便向け）\n参考展示・寝かせて置く'],
-    ['fixG-n5','天板 埋め込み投函口',100,1222,1000,'sans',300,20,140,'center','#6b6b68',false,'天板 埋め込み投函口（開口 270×30）\n体験用の袋を差したままにする'],
-    ['fixG-n6','E2',2,872,296,'sans',300,20,140,'center','#6b6b68',false,'E2'],
-    ['fixG-n7','キャプションボード 文面（案）',320,1040,560,'sans',300,20,140,'center','#6b6b68',false,'ポスト投函の 1 通に、S は 3 つ、M は 2 つ。\n厚さ 3cm・長辺 34cm の枠に、並べて入ります。'],
-    ['fixG-n8','注 配送箱',880,700,300,'sans',300,18,140,'center','#6b6b68',false,'袋は配送箱に立てて並べる\n（手で押さえない）'],
-    ['fixG-n10','注 キャプションボード',920,1060,270,'sans',300,18,140,'center','#6b6b68',false,'キャプションボード W300×H100\n口金（300）と同じ横幅・投函口の手前'],
+  {no:'6', id:'151:9', kind:'fixG', w:1200, h:1300, name:'什器 G｜天面（1:5）届く — ポスト投函 1 通に入る数（S×3／M×2）＋ 埋め込み投函口', texts:[
+    ['fixG-n1','S なら 3 つ（図面ラベル）',40,15,520,'sans',300,22,140,'center','#6b6b68',false,'S なら 3 つ'],
+    ['fixG-n2','M なら 2 つ（図面ラベル）',640,15,520,'sans',300,22,140,'center','#6b6b68',false,'M なら 2 つ'],
+    ['fixG-n0','枠の寸法（図面ラベル）',60,790,1080,'sans',300,22,140,'center','#6b6b68',false,'ポスト投函の枠（長辺 340 × 短辺 250 × 厚さ 30）に、そのまま入る数'],
+    ['235:2','キャプションボード 見出し',320,1062,560,'serif',500,21,140,'center','#1a1a1a',true,'1 通で、S は 3 つ。'],
+    ['235:3','キャプションボード 本文',320,1098,560,'sans',400,14,140,'center','#1a1a1a',true,'ポスト投函の枠（34 × 25 × 厚さ 3cm）に、S は 3 つ、M は 2 つ。\n1 回の発送で、まとめて届けられます。'],
+    ['fixG-n5','天板 投函口（図面ラベル）',100,1222,1000,'sans',300,20,140,'center','#6b6b68',false,'天板 埋め込み投函口（開口 270×30）\n体験用の袋を差したままにする'],
   ]},
   {no:'9', id:'151:13', kind:'fixH', w:1200, h:1300, name:'什器 H｜天面（1:5）伝える／平置き 5 枚 ＋ 立置き 4 袋・座布団に直接印刷するキャプション', texts:[
     ['193:3','座布団 概要 見出し',60,159,760,'sans',500,18,150,'left','#1a1a1a',true,'GeoPosting Pack',180],
@@ -435,15 +446,19 @@ const FACES = [
     ['11:36','段階 24h',350,278,80,'sans',300,10,'auto','left','#ffffff',false,'24h'],
     ['11:38','段階 土へ',490,278,80,'sans',300,10,'auto','left','#ffffff',false,'土へ'],
   ]},
-  {no:'22', id:'155:5', kind:'island2', w:1200, h:1200, name:'アイランド 左下（オリジナル印刷）｜9 袋 ＋ 四隅キャプション C1〜C4 — 上から見た面', texts:[
-    ['204:26','C4 奥左 4／4 だから、複数デザイン｜見出し',8,172,432,'serif',500,21,140,'left','#1a1a1a',true,'同じ注文で、デザインを変えられる。'],
-    ['204:27','C4 奥左 4／4 だから、複数デザイン｜本文',8,204,432,'sans',400,15,150,'left','#1a1a1a',true,'版がないので、1 回の注文の中で柄を分けられます。銘柄ごと、季節ごと、コラボごと。ここに並ぶ 9 枚も、すべて違うデザインです。'],
-    ['204:20','C3 奥右 3／4 だから、小ロット｜見出し',760,172,432,'serif',500,21,140,'right','#1a1a1a',true,'版がいらないから、少なくても刷れる。'],
-    ['204:21','C3 奥右 3／4 だから、小ロット｜本文',760,204,432,'sans',400,15,150,'right','#1a1a1a',true,'デジタル印刷は版をつくりません。版代がかからないぶん、まとまった枚数を刷らなくても、お店だけのパッケージがつくれます。'],
-    ['204:8','C1 前左 1／4 紙であること｜見出し',8,922,432,'serif',500,21,140,'left','#1a1a1a',true,'この袋は、紙でできています。'],
-    ['204:9','C1 前左 1／4 紙であること｜本文',8,954,432,'sans',400,15,150,'left','#1a1a1a',true,'フィルムのような光沢ではなく、光をやわらかく受ける表面。インクがのると、色も落ち着いた風合いで出ます。'],
-    ['204:14','C2 前右 2／4 いちばん外側が紙｜見出し',760,922,432,'serif',500,21,140,'right','#1a1a1a',true,'いちばん外側が紙。だから、直接刷れる。'],
-    ['204:15','C2 前右 2／4 いちばん外側が紙｜本文',760,954,432,'sans',400,15,150,'right','#1a1a1a',true,'ラベルや印刷したフィルムを貼っているのではありません。いちばん外の層が紙なので、袋の表面にそのままデジタル印刷ができます。'],
+  {no:'22', id:'155:5', kind:'island2', w:1200, h:1200, name:'アイランド 左下（オリジナル印刷）｜9 袋 ＋ 四隅キャプションボード C1〜C4（A7 横・平置き）', texts:[
+    ['201:28','C4 通し番号',18,18,190,'sans',300,10,140,'left','#1a1a1a',true,'C4　4／4　だから、複数デザイン'],
+    ['239:5','C4 見出し',18,36,190,'serif',500,13,140,'left','#1a1a1a',true,'同じ注文で、デザインを変えられる。'],
+    ['215:2','C4 本文',18,80,190,'sans',400,9,140,'left','#1a1a1a',true,'版がないので、1 回の注文の中で柄を分けられます。銘柄ごと、季節ごと、コラボごと。ここに並ぶ 9 枚も、すべて違うデザインです。'],
+    ['201:26','C3 通し番号',992,18,190,'sans',300,10,140,'left','#1a1a1a',true,'C3　3／4　だから、小ロット'],
+    ['239:4','C3 見出し',992,36,190,'serif',500,13,140,'left','#1a1a1a',true,'版がいらないから、少なくても刷れる。'],
+    ['215:3','C3 本文',992,80,190,'sans',400,9,140,'left','#1a1a1a',true,'デジタル印刷は版をつくりません。版代がかからないぶん、まとまった枚数を刷らなくても、お店だけのパッケージがつくれます。'],
+    ['210:3','C1 通し番号',18,1054,190,'sans',300,10,140,'left','#1a1a1a',true,'C1　1／4　紙であること'],
+    ['239:2','C1 見出し',18,1072,190,'serif',500,13,140,'left','#1a1a1a',true,'この袋は、紙でできています。'],
+    ['215:4','C1 本文',18,1116,190,'sans',400,9,140,'left','#1a1a1a',true,'フィルムのような光沢ではなく、光をやわらかく受ける表面。インクがのると、色も落ち着いた風合いで出ます。'],
+    ['201:24','C2 通し番号',992,1054,190,'sans',300,10,140,'left','#1a1a1a',true,'C2　2／4　いちばん外側が紙'],
+    ['239:3','C2 見出し',992,1072,190,'serif',500,13,140,'left','#1a1a1a',true,'いちばん外側が紙。だから、直接刷れる。'],
+    ['215:5','C2 本文',992,1116,190,'sans',400,9,140,'left','#1a1a1a',true,'ラベルや印刷したフィルムを貼っているのではありません。いちばん外の層が紙なので、袋の表面にそのままデジタル印刷ができます。'],
     ['island2-n0','①',560,1033,80,'sans',300,26,150,'center','#6b6b68',false,'①'],
     ['island2-n1','④',950,808,80,'sans',300,26,150,'center','#6b6b68',false,'④'],
     ['island2-n2','②',950,358,80,'sans',300,26,150,'center','#6b6b68',false,'②'],
@@ -453,14 +468,6 @@ const FACES = [
     ['island2-n6','⑦',668,770,80,'sans',300,26,150,'center','#6b6b68',false,'⑦'],
     ['island2-n7','⑧',668,396,80,'sans',300,26,150,'center','#6b6b68',false,'⑧'],
     ['island2-n8','⑨',344,583,80,'sans',300,26,150,'center','#6b6b68',false,'⑨'],
-    ['island2-n9','C1',8,1104,210,'sans',300,24,150,'center','#6b6b68',false,'C1'],
-    ['island2-n10','C2',982,1104,210,'sans',300,24,150,'center','#6b6b68',false,'C2'],
-    ['island2-n11','C3',982,68,210,'sans',300,24,150,'center','#6b6b68',false,'C3'],
-    ['island2-n12','C4',8,68,210,'sans',300,24,150,'center','#6b6b68',false,'C4'],
-    ['island2-n13','C4　4／4　だから、複数デザイン',8,150,432,'sans',300,17,150,'left','#6b6b68',false,'C4　4／4　だから、複数デザイン'],
-    ['island2-n14','C3　3／4　だから、小ロット',760,150,432,'sans',300,17,150,'right','#6b6b68',false,'C3　3／4　だから、小ロット'],
-    ['island2-n15','C1　1／4　紙であること',8,900,432,'sans',300,17,150,'left','#6b6b68',false,'C1　1／4　紙であること'],
-    ['island2-n16','C2　2／4　いちばん外側が紙',760,900,432,'sans',300,17,150,'right','#6b6b68',false,'C2　2／4　いちばん外側が紙'],
   ]},
 ];
 const CROP = { text:{ fixF:[0,1300], fixG:[0,1300], fixH:[820,1300], wallA:[0,1000], wallB:[0,1000], wallC:[0,1000], wallD:[0,1000], island:[0,600], island2:[0,1200] }, print:{ fixF:[0,1300], fixG:[0,1300], fixH:[0,1300], wallA:[0,1000], wallB:[0,1000], wallC:[0,1000], wallD:[0,1000], island:[0,600], island2:[0,1200] } };
@@ -476,7 +483,7 @@ const state = {
   local: {},       // 未保存の編集 {no:{nodeId:text}}
   db: null, focusId: null, pendingRender: false, busy: false,
 };
-try { const n = localStorage.getItem('scaj_myname'); state.myname = ['専務','荻野','スタッフ'].includes(n) ? n : '専務'; } catch(e){ state.myname = '専務'; }
+try { const n = localStorage.getItem('scaj_myname'); state.myname = ['専務','スタッフ'].includes(n) ? n : '専務'; } catch(e){ state.myname = '専務'; }
 try { const r = localStorage.getItem('scaj_role'); state.role = ['exec','ogino'].includes(r) ? r : 'staff'; } catch(e){}
 try { const z = localStorage.getItem('scaj_zoom'); if (z && ['text','print','all'].includes(z)) state.zoom = z; } catch(e){}
 try { const f = localStorage.getItem('scaj_face'); if (f && FACES.some(x=>x.no===f)) state.cur = f; } catch(e){}
@@ -516,7 +523,7 @@ function renderFaces(){
     const b = document.createElement('button'); b.type='button'; b.textContent = f.no; b.title = f.name;
     if (f.no === state.cur) b.classList.add('on');
     if (faceAllOk(f)) { const ok = document.createElement('span'); ok.className='ok'; ok.textContent = '✓'; ok.title='専務 確認済'; b.appendChild(ok); }
-    else if (faceAllChecked(f)) { const ok = document.createElement('span'); ok.className='ok half'; ok.textContent = '✓'; ok.title='荻野 確認済'; b.appendChild(ok); }
+
     if (hasDiff(f) || hasUnsaved(f)) { const c = document.createElement('span'); c.className='chg'; c.title = hasUnsaved(f) ? '未保存の編集あり' : 'Figma に未反映の変更あり'; b.appendChild(c); }
     { const d = state.docs[f.no]; if (d && d.comments && d.comments.length) { const c = document.createElement('span'); c.className='cm'; c.textContent = '💬'; c.title='コメントあり'; b.appendChild(c); } }
     b.addEventListener('click', () => selectFace(f.no));
@@ -596,7 +603,7 @@ function renderEditor(){
   const unsaved = hasUnsaved(face);
   const ids = printedIds(face); const okCount = ids.filter(id => ['synced','pending','error'].includes(itemState(face, id))).length;
   const chkCount = ids.filter(id => checkState(face, id) === 'ok').length;
-  const prog = ids.length ? `荻野 ${chkCount}／${ids.length}　専務 ${okCount}／${ids.length}` : '';
+  const prog = ids.length ? `専務 ${okCount}／${ids.length}` : '';
   let html = `<h2>面 ${face.no}｜${esc(face.name)}</h2>${prog || unsaved ? `<div class="prog">${prog}${unsaved ? '<span class="badge warn">未保存あり</span>' : ''}</div>` : ''}`;
   if (!state.db) html += `<div class="offline">保存先（Firebase）に接続していません。編集内容はこの端末だけに残ります。</div>`;
   const log = doc.log || [];
@@ -611,11 +618,11 @@ function renderEditor(){
     const btn = (who, st, onAttr, offAttr, cls) => (st === 'none' || st === 'stale')
       ? `<button type="button" class="okitem ${cls}${st === 'stale' ? ' stale' : ''}" ${onAttr}="${id}" ${can ? '' : 'disabled'}>${who} ${st === 'stale' ? '再確認' : '確認'}</button>`
       : `<button type="button" class="okitem ${cls} done" ${offAttr}="${id}" ${can ? '' : 'disabled'} title="押すと確認を取り消します">${who} ✓</button>`;
-    const btns = memo ? '' : `<span class="btns">${btn('荻野', cst, 'data-chk', 'data-unchk', 'chk')}${btn('専務', (stt === 'none' || stt === 'stale') ? stt : 'ok', 'data-ok', 'data-unok', 'exe')}</span>`;
+    const btns = memo ? '' : `<span class="btns">${btn('専務', (stt === 'none' || stt === 'stale') ? stt : 'ok', 'data-ok', 'data-unok', 'exe')}</span>`;
     const info = [];
     info.push(`${font==='serif'?'明朝':font==='hand'?'手書き体':'ゴシック'} ${size}px／幅 ${w}`);
     if (!memo) {
-      if (cst === 'ok') info.push(`荻野 確認 ${fmt(ck.at)}`); else if (cst === 'stale') info.push(`荻野 確認後に変更あり（確認時「${esc(ck.text)}」）`);
+
       if (stt === 'stale') info.push(`専務 確認後に変更あり（確認時「${esc(it.text)}」）`); else if (stt !== 'none') info.push(`専務 確認 ${fmt(it.at)}`);
     }
     if (last && last.from !== undefined) info.push(`最終変更：${esc(last.by)}さん ${fmt(last.at)}　前「${esc(last.from)}」`);
@@ -634,7 +641,7 @@ function renderEditor(){
     ${cs.length ? `<div class="list">${cs.map(c => `<div class="c"><div class="h">${esc(c.by)}　${fmt(c.at)}</div><div>${esc(c.text)}</div></div>`).join('')}</div>` : ''}
     <div class="in"><textarea id="cmtIn" placeholder="この面へのコメント（例：説明文をもう 2 行短く）" ${state.db ? '' : 'disabled'}></textarea><button type="button" id="cmtBtn" ${state.db ? '' : 'disabled'}>追加</button></div>
   </div>`;
-  html += `<details class="help"><summary>▸ 使い方</summary><div class="note">文言を直したら下の「保存」で全員に共有されます（保存前は点線枠）。「荻野 確認」「専務 確認」は押すだけで記録され、もう一度押すと取り消せます。確認後に文言が変わると「再確認」になります。確認日時・変更履歴・Figma との違いは各欄の「詳細」で見られます。Figma への反映は Claude が行います。</div></details>`;
+  html += `<details class="help"><summary>▸ 使い方</summary><div class="note">文言を直したら下の「保存」で全員に共有されます（保存前は点線枠）。「専務 確認」は押すだけで記録され、もう一度押すと取り消せます。確認後に文言が変わると「再確認」になります。確認日時・変更履歴・Figma との違いは各欄の「詳細」で見られます。Figma への反映は Claude が行います。</div></details>`;
   ed.innerHTML = html;
 
   ed.querySelectorAll('textarea[data-id]').forEach(ta => {
@@ -756,7 +763,7 @@ $('#exportBtn').addEventListener('click', async () => {
     for (const t of f.texts) {
       const id = t[0]; const ch = savedText(f, id) !== baseText(f, id); const ck = checks[id] && checks[id].ok, ok = items[id] && items[id].ok;
       if (!ch && !ck && !ok) continue;
-      lines.push(`・${t[1]}［${id}］　荻野:${ck ? (checks[id].text === savedText(f, id) ? '✓' : '要再確認') : '－'}　専務:${ok ? (items[id].text === savedText(f, id) ? '✓' : '要再確認') : '－'}`);
+      lines.push(`・${t[1]}［${id}］　専務:${ok ? (items[id].text === savedText(f, id) ? '✓' : '要再確認') : '－'}`);
       if (ch) lines.push(`　前：${baseText(f, id).replace(/\n/g,'／')}`, `　後：${savedText(f, id).replace(/\n/g,'／')}`);
     }
     for (const c of (d.comments || [])) lines.push(`　💬 ${c.by || ''} ${fmt(c.at)}：${c.text}`);
