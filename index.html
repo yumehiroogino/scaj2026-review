@@ -362,20 +362,20 @@ const FACES = [
     ['fixG-n7','E3',960,842,148,'sans',300,20,150,'center','#6b6b68',false,'E3'],
   ]},
   {no:'9', id:'151:13', kind:'fixH', w:1200, h:1300, name:'什器 H｜天面（1:5）伝える／平置き 5 枚 ＋ 立置き 4 袋・座布団に直接印刷するキャプション', texts:[
-    ['193:3','座布団 概要 見出し',60,159,760,'sans',500,18,150,'left','#1a1a1a',true,'GeoPosting Pack'],
-    ['193:4','座布団 概要 本文',60,109,760,'sans',400,16,150,'left','#1a1a1a',true,'店頭で自立し、そのままポストへ。\n紙の手触りを、比べてください。'],
+    ['193:3','座布団 概要 見出し',60,159,760,'sans',500,18,150,'left','#1a1a1a',true,'GeoPosting Pack',180],
+    ['193:4','座布団 概要 本文',60,109,760,'sans',400,16,150,'left','#1a1a1a',true,'店頭で自立し、そのままポストへ。\n紙の手触りを、比べてください。',180],
     ['198:3','01 Tomorrow Bag 1.0 上質紙｜製品名',70,1110,250,'sans',400,16,140,'left','#1a1a1a',true,'Tomorrow Bag 1.0\n上質紙'],
     ['198:4','01 A面（通路側）本文',70,1158,250,'sans',400,16,140,'left','#1a1a1a',true,'さらりとした紙肌と、光沢を抑えた落ち着いた表情。'],
-    ['198:7','01 B面（奥側）本文',70,873,250,'sans',400,16,140,'left','#1a1a1a',true,'指先でなぞり、晒片艶紙との指すべりの違いを。'],
+    ['198:7','01 B面（奥側）本文',70,873,250,'sans',400,16,140,'left','#1a1a1a',true,'指先でなぞり、晒片艶紙との指すべりの違いを。',180],
     ['198:9','04 Tomorrow Bag 3.0 タウパー｜製品名',340,1110,250,'sans',400,16,140,'left','#1a1a1a',true,'Tomorrow Bag 3.0\n晒クレープ紙（タウパー）'],
     ['198:10','04 A面（通路側）本文',340,1158,250,'sans',400,16,140,'left','#1a1a1a',true,'細かなシワと凹凸が、指先に伝わる紙の風合い。'],
-    ['198:13','04 B面（奥側）本文',340,873,250,'sans',400,16,140,'left','#1a1a1a',true,'晒片艶紙と比べて、細かな凹凸を確かめて。'],
+    ['198:13','04 B面（奥側）本文',340,873,250,'sans',400,16,140,'left','#1a1a1a',true,'晒片艶紙と比べて、細かな凹凸を確かめて。',180],
     ['198:15','03 Tomorrow Bag 3.0 晒片艶紙｜製品名',610,1110,250,'sans',400,16,140,'left','#1a1a1a',true,'Tomorrow Bag 3.0\n晒片艶紙'],
     ['198:16','03 A面（通路側）本文',610,1158,250,'sans',400,16,140,'left','#1a1a1a',true,'なめらかな紙肌。角度を変えると、控えめな艶。'],
-    ['198:19','03 B面（奥側）本文',610,873,250,'sans',400,16,140,'left','#1a1a1a',true,'タウパーと触り比べ、なめらかさの違いを。'],
+    ['198:19','03 B面（奥側）本文',610,873,250,'sans',400,16,140,'left','#1a1a1a',true,'タウパーと触り比べ、なめらかさの違いを。',180],
     ['198:21','02 Future bio Bag 晒片艶紙｜製品名',880,1110,250,'sans',400,16,140,'left','#1a1a1a',true,'Future bio Bag\n晒片艶紙'],
     ['198:22','02 A面（通路側）本文',880,1158,250,'sans',400,16,140,'left','#1a1a1a',true,'すべすべとした手触りと、白い紙のほのかな艶。'],
-    ['198:25','02 B面（奥側）本文',880,873,250,'sans',400,16,140,'left','#1a1a1a',true,'3.0と持ち比べ、紙肌や袋のしなやかさを。'],
+    ['198:25','02 B面（奥側）本文',880,873,250,'sans',400,16,140,'left','#1a1a1a',true,'3.0と持ち比べ、紙肌や袋のしなやかさを。',180],
     ['fixH-n0','奥側｜平置き5枚・奥側に向けた概要キャプション',40,45,1120,'sans',300,21,150,'left','#6b6b68',false,'奥側｜平置き5枚・奥側に向けた概要キャプション'],
     ['fixH-n1','通路側｜立置き4袋・前後から読める製品説明',40,790,1120,'sans',300,21,150,'left','#6b6b68',false,'通路側｜立置き4袋・前後から読める製品説明'],
     ['fixH-n2','1.0',69,224,126,'sans',300,20,150,'left','#6b6b68',false,'1.0'],
@@ -535,13 +535,14 @@ function renderPreview(){
     fr.appendChild(el);
   }
   for (const t of face.texts) {
-    const [id,name,x,y,w,font,weight,size,lh,align,color] = t;
+    const [id,name,x,y,w,font,weight,size,lh,align,color] = t; const trot = t[13];
     const el = document.createElement('p'); el.className = 't'; el.dataset.id = id; el.title = name;
     el.style.left = x+'px'; el.style.top = y+'px'; el.style.width = w+'px';
     el.style.fontFamily = FONT[font]; el.style.fontWeight = weight; el.style.fontSize = size+'px';
     el.style.lineHeight = (lh === 'auto') ? '1.45' : (lh/100).toString();
     el.style.textAlign = align; el.style.color = color;
     el.textContent = curText(face, id);
+    if (trot) { el.style.transformOrigin = '50% 50%'; el.style.transform = 'rotate(' + (-trot) + 'deg)'; }
     if (state.focusId === id) el.classList.add('hl');
     el.addEventListener('click', () => { const ta = document.getElementById('ta-' + k(id)); if (ta) { ta.focus(); ta.scrollIntoView({block:'center', behavior:'smooth'}); } });
     fr.appendChild(el);
