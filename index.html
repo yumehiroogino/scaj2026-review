@@ -99,8 +99,17 @@
   .upd .it .ba s{opacity:.65}
   .upd .it .todo{margin-top:4px;font-weight:500}
   .upd .it .todo::before{content:'要確認 ';font-size:10px;border:1px solid currentColor;padding:0 4px;margin-right:4px}
+  .audit{background:var(--field)!important;border-color:var(--rule-soft)!important;color:var(--ink)!important}
+  .audit .it{border-color:var(--rule-soft)}
+  .audit .result{font-weight:500}
+  .audit .result.done{color:var(--ok)}
+  .audit .result.partial{color:var(--warn)}
+  .audit .result.open{color:var(--err)}
   .fld .badge.u{background:var(--upd-bg);border-color:var(--upd-line);color:var(--upd-ink)}
   .faces button .u{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);font-size:8px;line-height:1;padding:1px 3px;background:var(--upd-bg);border:1px solid var(--upd-line);color:var(--upd-ink);white-space:nowrap}
+  .faces button .u.done{background:var(--field);border-color:var(--ok);color:var(--ok)}
+  .faces button .u.partial{background:var(--field);border-color:var(--warn);color:var(--warn)}
+  .faces button .u.open{background:var(--field);border-color:var(--err);color:var(--err)}
   .flnote{position:absolute;right:0;bottom:0;text-align:right;padding:2px 10px;font-size:10px;color:var(--ink-3);pointer-events:none;background:var(--bg)}
   .stage{contain:size layout}
 
@@ -284,7 +293,7 @@
 </head>
 <body>
 <header>
-  <div><h1>SCAJ2026 文言レビュー</h1><div class="sub">修正・確認・コメントは自動で共有され、開いている全員にリアルタイム反映（ログイン不要）</div></div>
+  <div><h1>SCAJ2026 文言レビュー</h1><div class="sub">表示の基準：現行 Figma（9/24）。コメント・新しい修正は共有されます</div></div>
   <div class="view-switch" role="tablist" aria-label="表示する図面">
     <button id="viewExhibit" type="button" role="tab" aria-controls="faces" aria-selected="true">什器・アイランド・壁面</button>
     <button id="viewRoll" type="button" role="tab" aria-controls="faces" aria-selected="false">F・G・H 左右ロール（最終版）</button>
@@ -326,8 +335,8 @@
 const FIGMA_FILE_KEY = 'ZAEBPIKTF8IUYxjwAgXvBv';
 const FRAME_BG = '#edede8';
 /* 外枠が何を表しているか（プレビューの枠線） */
-const OUTER = { fixF:'什器 F 天板 600 × 650mm（下が通路側）', fixG:'什器 G 天板 600 × 650mm（下が通路側）', fixH:'什器 H 天板 600 × 650mm（下が通路側）',
-  wallA:'背面 a 天面 幅 1250mm（小座布団 5 枚＋前端の見出し帯）', wallB:'背面 b 天面 幅 1250mm（座布団 2 枚＋パンフレット）', wallC:'背面 壁面 c 1 面ぶん（下が床）', wallD:'背面 壁面 d 1 面ぶん（下が床）',
+const OUTER = { fixF:'什器 F 天板 650 × 600mm（下が通路側）', fixG:'什器 G 天板 650 × 600mm（下が通路側）', fixH:'什器 H 天板 650 × 600mm（下が通路側）',
+  wallA:'背面 a 天面 幅 1250mm（用途展開座布団 1 枚・5 用途）', wallB:'背面 b 天面 幅 1250mm（座布団 2 枚＋パンフレット）', wallC:'背面 壁面 c 1 面ぶん（下が床）', wallD:'背面 壁面 d 1 面ぶん（下が床）',
   island:'アイランド 右下 天面 600 角 ＋ 側面（衝立）', island2:'アイランド 左下 天面 600 角',
   roll:'F・G・H ロール 幅 600mm・全高 4000mm（下が床）' };
 const RECTS = {
@@ -345,13 +354,16 @@ const RECTS = {
     ['r',220,2940,160,160,null,1.5,'展示物'],
   ],
   fixF: [
-    ['r',50,75,1100,370,'roll',1,'座布団B｜TG-X3 技術紹介・550×185mm（奥側から読む）'],
-    ['r',885,220,220,100,'bag',1,'実物｜Tomorrow Bag 3.0（TG-X3）'],
-    ['r',50,850,1100,370,'roll',1,'座布団A｜サイズ比較4点・550×185mm'],
-    ['r',50,890,240,148,'bag',1,'サイズ XS'],
-    ['r',300,890,220,100,'bag',1,'サイズ S'],
-    ['r',530,890,310,100,'bag',1,'サイズ M'],
-    ['r',840,890,340,180,'bag',1,'サイズ L'],
+    ['r',50,75,1200,370,'roll',2,'座布団B｜TG-X3 新キャプション・600×185mm'],
+    ['r',1010,105,200,310,null,1.5,'実物袋展示スペース（点線）'],
+    ['r',874,365,96,30,null,1.5,'New ピル'],
+    ['r',575,211,2,150,'#7a9987',0,'区切り線 1'],
+    ['r',321,211,2,150,'#7a9987',0,'区切り線 2'],
+    ['r',50,620,1200,500,'roll',2,'座布団A｜サイズ比較4点・600×250mm'],
+    ['r',75,786,240,148,'bag',1,'サイズ XS',-15,'center'],
+    ['r',335,810,220,100,'bag',1,'サイズ S',-15,'center'],
+    ['r',564,798,310,100,'bag',1,'サイズ M',-15,'center'],
+    ['r',892,770,340,180,'bag',1,'サイズ L',-15,'center'],
   ],
   fixG: [
     ['r',30,43,1138,858,'roll',1,'座布団｜配送箱 2 点をのせる'],
@@ -382,31 +394,26 @@ const RECTS = {
     ['r',840,990,220,100,'bag',1,'立置き 03 Tomorrow Bag 3.0 晒片艶（Future bio Bag と共通の紙）'],
   ],
   wallA: [
-    ['r',0,0,2500,1050,'#f0ede5',0,'背面 a 天面（幅 1250mm・1px=0.5mm）'],
-    ['r',60,180,436,600,'#e0ebe3',1,'小座布団｜アパレル（218×300mm）'],
-    ['r',546,180,436,600,'#e0ebe3',1,'小座布団｜PLANTIC（218×300mm）'],
-    ['r',1032,180,436,600,'#e0ebe3',1,'小座布団｜フラワーベース（218×300mm）'],
-    ['r',1518,180,436,600,'#e0ebe3',1,'小座布団｜お米（218×300mm）'],
-    ['r',2004,180,436,600,'#e0ebe3',1,'小座布団｜ペットフード（218×300mm）'],
-    ['r',148,230,260,230,'#adc7c7',1,'アパレル'],
-    ['r',554,280,180,180,'#94734d',1,'PLANTIC 1'],
-    ['r',744,250,230,210,'#b8c7a6',1,'PLANTIC 2'],
-    ['r',1160,210,180,250,'#ccd1c7',1,'フラワーベース'],
-    ['r',1636,290,200,170,'#a17d52',1,'お米'],
-    ['r',2107,260,230,200,'#63abc4',1,'ペットフード'],
-    ['r',60,820,2380,200,'#e0ebe3',1,'座布団｜用途展開 見出し・本文（前端 1190×100mm）'],
+    ['r',0,0,2500,600,'#f0ede5',0,'背面 a 天面（幅 1250mm・1px=0.5mm）'],
+    ['r',100,50,2300,500,'roll',2,'座布団｜用途展開（1枚）1150×250mm'],
+    ['r',198,83,260,230,'#adc7c7',2,'アパレル'],
+    ['r',575,133,180,180,'#94734d',2,'PLANTIC 1'],
+    ['r',771,103,230,210,'#b8c7a6',2,'PLANTIC 2'],
+    ['r',1158,63,180,250,'#ccd1c7',2,'フラワーベース'],
+    ['r',1608,143,200,170,'#a17d52',2,'フラットボトム＋型抜き'],
+    ['r',2080,113,230,200,'#63abc4',2,'ペットフード'],
   ],
   wallB: [
-    ['r',0,0,2500,1050,'#f0ede5',0,'背面 b 天面（幅 1250mm・1px=0.5mm）'],
-    ['r',60,220,1200,600,'#e0ebe5',1,'座布団1｜BERTH COFFEE 4袋（600×300mm）'],
-    ['r',130,255,180,190,'#a8d6e0',1,'BERTH COFFEE パッケージ 1'],
-    ['r',390,255,180,190,'#528c94',1,'BERTH COFFEE パッケージ 2'],
-    ['r',650,255,180,190,'#adc787',1,'BERTH COFFEE パッケージ 3'],
-    ['r',910,255,180,190,'#c2999c',1,'BERTH COFFEE パッケージ 4'],
-    ['r',1340,220,600,600,'#ebe5d1',1,'座布団2｜ラミナ® 1袋（300×300mm）'],
-    ['r',1530,255,220,190,'#7a9952',1,'ラミナ® パッケージ'],
-    ['r',2020,220,420,600,null,1.5,'パンフレット直置き（A4相当・座布団なし）'],
-    ['r',2100,255,260,370,'#f7f7f0',1,'パンフレット A4相当'],
+    ['r',0,0,2500,600,'#f0ede5',0,'背面 b 天面（幅 1250mm・1px=0.5mm）'],
+    ['r',60,50,1200,500,'roll',2,'座布団1｜BERTH COFFEE 4袋（600×250mm）'],
+    ['r',106,88,240,154,'#a8d6e0',2,'BERTH COFFEE パッケージ 1',-15,'center'],
+    ['r',393,88,240,154,'#528c94',2,'BERTH COFFEE パッケージ 2',-15,'center'],
+    ['r',680,88,240,154,'#adc787',2,'BERTH COFFEE パッケージ 3',-15,'center'],
+    ['r',967,88,240,154,'#c2999c',2,'BERTH COFFEE パッケージ 4',-15,'center'],
+    ['r',1340,50,600,500,'roll',2,'座布団2｜ラミナ® 1袋（300×250mm）'],
+    ['r',1530,100,220,190,'#7a9952',2,'ラミナ® パッケージ'],
+    ['r',2020,50,420,500,null,1.5,'パンフレット直置き（A4相当・座布団なし）'],
+    ['r',2100,80,260,370,'#f7f7f0',1,'パンフレット A4相当'],
   ],
   wallC: [
     ['r',0,20,500,920,null,1.5,'背面 1 面（FL0〜2300）'],
@@ -461,26 +468,30 @@ const RECTS = {
 };
 // text: [nodeId, レイヤー名, x, y, w, font(sans|serif|hand), weight, size, lineHeight%('auto'), align, color, 印刷される文言か, 文字列]
 const EXHIBIT_FACES = [
-  {no:'3', id:'151:5', kind:'fixF', w:1200, h:1300, name:'什器 F｜天面（1:5）守る — TG-X3 技術紹介（奥側）＋ サイズ比較 4 点（通路側）', texts:[
-    ['227:2','反対側 見出し（図面ラベル）',50,25,1100,'sans',500,22,140,'left','#1a1a1a',false,'反対側｜守る — TG-X3（Tomorrow Bag 3.0 の素材）を知る'],
-    ['279:4','TG-X3 ラベル',80,403,760,'sans',300,14,140,'left','#1a1a1a',true,'TG-X3｜Tomorrow Bag 3.0 の素材',180],
-    ['279:5','TG-X3 見出し',80,360,760,'serif',500,24,140,'left','#1a1a1a',true,'紙を基材に、フィルムは最小限。',180],
-    ['279:6','TG-X3 本文',80,284,760,'sans',400,14,160,'left','#1a1a1a',true,'紙を基材にしたまま、バリア性を高めるのには限界がありました。フィルムを重ねる、アルミを使う。その方法では、石油由来の素材やアルミが増えていきます。\nTG-X3 は、トライフ社と共同開発した紙の包材。フィルムを最小限に抑えながら、バリア性を高めました。',180],
-    ['279:7','TG-X3 バリア性の数値（○○ 要確認）',80,254,760,'sans',500,14,150,'left','#1a1a1a',true,'紙マーク対象（要確認）　酸素透過度 ○○　／　水蒸気透過度 ○○',180],
-    ['279:8','TG-X3 小見出し',80,221,760,'serif',500,17,140,'left','#1a1a1a',true,'バリア性は、高ければいいわけではない。',180],
-    ['279:9','TG-X3 本文 2',80,167,760,'sans',400,14,160,'left','#1a1a1a',true,'守りたい中身によって、必要なバリア性は変わります。コーヒーには、コーヒーに合ったバリア性を。長い保存期間が求められる、コーヒー以外の商品にも応えます。',180],
-    ['279:3','図面ラベル｜Tomorrow Bag 3.0（TG-X3）実物',895,274,200,'sans',400,13,140,'left','#6b6b68',false,'Tomorrow Bag 3.0\n（TG-X3）実物',180],
-    ['227:16','通路側 見出し（図面ラベル）',40,790,1100,'sans',500,22,140,'left','#1a1a1a',false,'通路側｜守る — 内容物に合うサイズを選ぶ'],
-    ['227:30','通路側 守る 見出し',55,1095,620,'sans',500,18,140,'left','#1a1a1a',true,'中身を守る、ちょうどいいサイズ。'],
-    ['227:31','通路側 守る 本文',55,1127,850,'sans',400,15,140,'left','#1a1a1a',true,'内容量に合う袋を選ぶことが、豆を守り、配送の負担も抑えます。'],
-    ['227:19','サイズ XS 名称',55,1157,230,'sans',500,30,140,'left','#1a1a1a',true,'XS'],
-    ['227:20','サイズ XS 寸法',55,1195,230,'sans',400,15,140,'left','#1a1a1a',true,'W120×H150×D74'],
-    ['227:22','サイズ S 名称',305,1157,210,'sans',500,30,140,'left','#1a1a1a',true,'S'],
-    ['227:23','サイズ S 寸法',305,1195,210,'sans',400,15,140,'left','#1a1a1a',true,'W110×H215×D50'],
-    ['227:25','サイズ M 名称',535,1157,300,'sans',500,30,140,'left','#1a1a1a',true,'M'],
-    ['227:26','サイズ M 寸法',535,1195,300,'sans',400,15,140,'left','#1a1a1a',true,'W155×H215×D50'],
-    ['227:28','サイズ L 名称',845,1157,330,'sans',500,30,140,'left','#1a1a1a',true,'L'],
-    ['227:29','サイズ L 寸法',845,1195,330,'sans',400,15,140,'left','#1a1a1a',true,'W170×H215×D90'],
+  {no:'3', id:'151:5', kind:'fixF', w:1300, h:1200, name:"什器 F｜天面（1:5）TG-X3 新キャプション（9/24）＋サイズ比較 4 点", texts:[
+    ["336:4","New",892,366,60,"serif",400,18,"auto","center","#3b6b4f",true,"‹ New ›",180],
+    ["336:5","製品名",595,299,376,"serif",500,42,"auto","left","#1a1a1a",true,"Tomorrow Bag 3.0",180],
+    ["336:6","素材",729,269,242,"serif",400,21,"auto","left","#1a1a1a",true,"共同開発素材 TG-X3 採用",180],
+    ["336:7","共同開発",697,228,274,"serif",400,25,"auto","left","#3b6b4f",true,"トライフ社との共同開発",180],
+    ["336:8","本文",610,151,361,"sans",400,15,"auto","left","#1a1a1a",true,"紙を基材に、フィルムの使用を最小限に抑えながら、\n非常に高い酸素・水蒸気バリア性を実現。\nより長期保存が求められる用途にも応える新製品です。",180],
+    ["336:12","WVTR 見出し",374,336,150,"sans",400,14,"auto","center","#1a1a1a",true,"水蒸気透過度（WVTR）",180],
+    ["336:13","WVTR 数値",363,264,173,"serif",500,44,"auto","center","#1a1a1a",true,"0.2〜0.3",180],
+    ["336:14","WVTR 単位",391,233,117,"serif",400,25,"auto","center","#1a1a1a",true,"g/㎡・day",180],
+    ["336:15","OTR 見出し",139,336,126,"sans",400,14,"auto","center","#1a1a1a",true,"酸素透過度（OTR）",180],
+    ["336:16","OTR 数値",116,264,173,"serif",500,44,"auto","center","#1a1a1a",true,"0.5〜0.7",180],
+    ["336:17","OTR 単位",138,233,129,"serif",400,25,"auto","center","#1a1a1a",true,"cc/㎡・day",180],
+    ["336:18","OTR 条件",141,215,122,"serif",400,14,"auto","center","#1a1a1a",true,"（23℃・80%RH）",180],
+    ["336:19","注釈",134,167,390,"sans",400,12,"auto","center","#1a1a1a",true,"※記載の数値は試験サンプルによる実測値であり、保証値ではありません。",180],
+    ["227:30","中身を守る、ちょうどいいサイズ。",73,985,620,"sans",500,18,140,"left","#1a1a1a",true,"中身を守る、ちょうどいいサイズ。",0],
+    ["227:31","内容量に合う袋を選ぶことが、豆を守り、配送の負担も抑えます。",73,1017,850,"sans",400,15,140,"left","#1a1a1a",true,"内容量に合う袋を選ぶことが、豆を守り、配送の負担も抑えます。",0],
+    ["227:19","XS",203,1047,230,"sans",500,30,140,"left","#1a1a1a",true,"XS",0],
+    ["227:20","W120×H150×D74",203,1085,230,"sans",400,15,140,"left","#1a1a1a",true,"W120×H150×D74",0],
+    ["227:22","S",359,1047,210,"sans",500,30,140,"left","#1a1a1a",true,"S",0],
+    ["227:23","W110×H215×D50",359,1085,210,"sans",400,15,140,"left","#1a1a1a",true,"W110×H215×D50",0],
+    ["227:25","M",572,1047,300,"sans",500,30,140,"left","#1a1a1a",true,"M",0],
+    ["227:26","W155×H215×D50",572,1085,300,"sans",400,15,140,"left","#1a1a1a",true,"W155×H215×D50",0],
+    ["227:28","L",765,1047,330,"sans",500,30,140,"left","#1a1a1a",true,"L",0],
+    ["227:29","W170×H215×D90",765,1085,330,"sans",400,15,140,"left","#1a1a1a",true,"W170×H215×D90",0],
   ]},
   {no:'6', id:'151:9', kind:'fixG', w:1200, h:1300, name:'什器 G｜天面（1:5）届く — 座布団＋配送箱（S×3／M×2）＋ 埋め込み投函口', texts:[
     ['241:2','座布団 本文（反転・反対側から読む）',60,52,1080,'sans',400,16,140,'center','#1a1a1a',true,'ジオポスは、開発段階からポスト投函に合わせて設計しています。厚さ 3cm・長辺 34cm という枠を先に決め、その中でコーヒー豆をいちばん多く入れられる形と寸法を選びました。',180],
@@ -509,26 +520,26 @@ const EXHIBIT_FACES = [
     ['fixH-n9','04 Tomorrow',502,999,196,'sans',300,22,150,'left','#6b6b68',false,'04 Tomorrow\nBag 3.0'],
     ['fixH-n10','03 Tomorrow',852,999,196,'sans',300,22,150,'left','#6b6b68',false,'03 Tomorrow\nBag 3.0'],
   ]},
-  {no:'14', id:'253:6', kind:'wallA', w:2500, h:1050, name:'背面 a｜天面配置（幅 1250mm）用途例ごとの小座布団 5 枚 ＋ 前端の見出し帯', texts:[
-    ['253:19','用途展開 見出し',100,844,2140,'serif',500,34,135,'left','#1a2e26',true,'コーヒーだけじゃない。紙のパッケージは、暮らしのさまざまな場面へ。'],
-    ['253:20','用途展開 本文',100,904,2300,'sans',400,22,160,'left','#242e29',true,'紙の風合いと、用途に合わせて選べるバリア性・加工性を活かし、アパレル、植物、フラワーベース、お米、ペットフードなどへ。中身を守りながら、使う場面やブランドの想いに合わせて、包み方を広げられます。'],
-    ['253:14','用途ラベル アパレル',78,485,400,'sans',400,22,140,'center','#38473d',true,'アパレル'],
-    ['280:3','用途説明 アパレル',78,530,400,'sans',400,20,150,'center','#38473d',true,'靴下やハンカチを、紙の袋で。ポストに入る厚みなので、そのまま発送できます。'],
-    ['253:15','用途ラベル PLANTIC',564,485,400,'sans',400,22,140,'center','#38473d',true,'PLANTIC'],
-    ['280:5','用途説明 PLANTIC',564,530,400,'sans',400,20,150,'center','#38473d',true,'クラフト紙とクラフト紙の間に、クラレ株式会社のバイオマス由来ガスバリア材「PLANTIC」をサンドラミ。袋の自立性を保ちながら、内容物の油染みを防ぎます。'],
-    ['253:16','用途ラベル フラワーベース',1050,485,400,'sans',400,22,140,'center','#38473d',true,'フラワーベース'],
-    ['280:7','用途説明 フラワーベース',1050,530,400,'sans',400,20,150,'center','#38473d',true,'ドライフラワーやスワッグを挿して。紙のやわらかな風合いが、花を引き立てます。'],
-    ['253:17','用途ラベル お米',1536,485,400,'sans',400,22,140,'center','#38473d',true,'お米'],
-    ['280:9','用途説明 お米',1536,530,400,'sans',400,20,150,'center','#38473d',true,'少量のお米を、贈りやすい小分けに。産地や名前を印刷して、ギフトにも。'],
-    ['253:18','用途ラベル ペットフード',2022,485,400,'sans',400,22,140,'center','#38473d',true,'ペットフード'],
-    ['280:11','用途説明 ペットフード',2022,530,400,'sans',400,20,150,'center','#38473d',true,'おやつやフードの小分けに。中身に合わせてバリア性を選べる、紙のパッケージです。'],
+  {no:'14', id:'253:6', kind:'wallA', w:2500, h:600, name:"背面 a｜1 枚の用途展開座布団・5 用途と PLANTIC ロゴ", texts:[
+    ["253:19","用途展開 見出し",140,435,2140,"serif",500,26,135,"left","#1a2e26",true,"紙のパッケージは、暮らしのさまざまな場面へ。",0],
+    ["253:20","用途展開 本文",140,478,2220,"sans",400,16,160,"left","#242e29",true," 紙ならではの風合いや手触りを活かしながら、中身や用途に合わせた機能を持たせることで、パッケージの可能性はさらに広がります。 \n包むものに合わせて、紙の新しい可能性をご提案します。",0],
+    ["253:14","用途ラベル｜アパレル",120,322,420,"sans",400,18,140,"center","#38473d",true,"アパレル",0],
+    ["280:3","用途説明｜アパレル",120,350,420,"sans",400,14,150,"center","#38473d",true,"紙とバイオマス由来フィルムを使用した\nバイオマス度約47%のパッケージです。\n※材質構成に基づく参考値",0],
+    ["253:15","用途ラベル｜PLANTIC",580,322,420,"sans",400,18,140,"center","#38473d",true,"PLANTIC",0],
+    ["280:5","用途説明｜PLANTIC",580,350,420,"sans",400,14,150,"center","#38473d",true,"クラフト紙とクラフト紙の間に、クラレ株式会社のバイオマス由来ガスバリア材「PLANTIC」をサンドラミ。袋の自立性を保ちながら、内容物の油染みを防ぎます。",0],
+    ["253:16","用途ラベル｜フラワーベース",1040,322,420,"sans",400,18,140,"center","#38473d",true,"フラワーベースバッグ",0],
+    ["280:7","用途説明｜フラワーベース",1040,350,420,"sans",400,14,150,"center","#38473d",true,"ドライフラワーやスワッグを挿して。紙のやわらかな風合いが、花を引き立てます。",0],
+    ["253:17","用途ラベル｜お米",1500,322,420,"sans",400,18,140,"center","#38473d",true,"フラットボトム+型抜き",0],
+    ["280:9","用途説明｜お米",1500,350,420,"sans",400,14,150,"center","#38473d",true,"少量のお米を、贈りやすい小分けに。産地や名前を印刷して、ギフトにも。",0],
+    ["253:18","用途ラベル｜ペットフード",1960,322,420,"sans",400,18,140,"center","#38473d",true,"ペットフード",0],
+    ["280:11","用途説明｜ペットフード",1960,350,420,"sans",400,14,150,"center","#38473d",true,"おやつやフードの小分けに。中身に合わせてバリア性を選べる、紙のパッケージです。",0],
   ]},
-  {no:'15', id:'248:5', kind:'wallB', w:2500, h:1050, name:'背面 b｜天面配置（幅 1250mm）座布団 2 枚（BERTH COFFEE 4 袋／ラミナ® 1 袋）＋ パンフレット直置き', texts:[
-    ['248:13','BERTH COFFEE 見出し',120,495,1080,'serif',500,32,135,'left','#1a2e26',true,'BERTH COFFEE｜想いを届け、袋も循環へ'],
-    ['248:14','BERTH COFFEE 本文',120,555,1080,'sans',400,22,160,'left','#242e29',true,'生産地の山や川、光を表した4つのデザイン。FutureBio Bagは、豆だけでなく、生産地の風景や物語まで届けるパッケージです。紙と生分解性樹脂を組み合わせ、使用後の袋も廃棄物で終わらせず、資源循環へつなぐ未来を考えています。'],
-    ['248:16','ラミナ® 見出し',1390,495,500,'serif',500,28,135,'left','#3b401f',true,'ラミナ®｜ラミネートしない、紙の包装'],
-    ['248:17','ラミナ® 本文',1390,585,500,'sans',400,20,160,'left','#3b3d29',true,'紙に水系塗工でヒートシール性を付与。ラミネート加工なしで包装化でき、工程短縮と紙製品へのリサイクルを目指します。'],
-    ['248:20','パンフレット注記',2050,665,360,'sans',400,22,150,'center','#474747',true,'パンフレット\n座布団なし・直置き\nご自由にお持ちください'],
+  {no:'15', id:'248:5', kind:'wallB', w:2500, h:600, name:"背面 b｜BERTH COFFEE・ラミナ®・パンフレット", texts:[
+    ["248:13","BERTH COFFEE 見出し",120,420,1080,"serif",500,26,135,"left","#1a2e26",true,"BERTH COFFEE｜想いを届け、袋も循環へ",0],
+    ["248:14","BERTH COFFEE 本文",120,465,1080,"sans",400,16,160,"left","#242e29",true,"生産地の山や川、光を表した4つのデザイン。FutureBio Bagは、豆だけでなく、生産地の風景や物語まで届けるパッケージです。紙と生分解性樹脂を組み合わせ、使用後の袋も廃棄物で終わらせず、資源循環へつなぐ未来を考えています。",0],
+    ["248:16","ラミナ 見出し",1390,420,500,"serif",500,26,135,"left","#3b401f",true,"ラミナ®｜ラミネートしない、紙の包装",0],
+    ["248:17","ラミナ 本文",1390,465,500,"sans",400,16,160,"left","#3b3d29",true,"紙に水系塗工でヒートシール性を付与。ラミネート加工なしで包装化でき、工程短縮と紙製品へのリサイクルを目指します。",0],
+    ["248:20","パンフレット注記",2050,445,360,"sans",400,22,150,"center","#474747",true,"パンフレット\nご自由にお持ちください",0],
   ]},
   {no:'16', id:'93:12', kind:'wallC', w:500, h:1000, name:'背面 c｜陳列棚 3 段（無地袋・花柄／販売）｜文言は未作成', texts:[
     ['wallC-n8','陳列棚 3 段（無地袋・花柄／販売）',10,30,480,'sans',300,20,150,'center','#6b6b68',false,'陳列棚 3 段（無地袋・花柄／販売）'],
@@ -578,7 +589,7 @@ const EXHIBIT_FACES = [
     ['island2-n8','⑨',344,583,80,'sans',300,26,150,'center','#6b6b68',false,'⑨'],
   ]},
 ];
-/* ===== 専務コメント（9/22）への対応 — 各面の右上に表示・変更した文言は黄色で示す ===== */
+/* ===== 9/22 時点の対応履歴。現在の照合結果は MEMO_AUDIT を参照 ===== */
 const UPD_DATE = '9/22';
 const CHANGES = {
   '3': { ids:['279:4','279:5','279:6','279:7','279:8','279:9'], items:[
@@ -624,11 +635,28 @@ const CHANGES = {
       ba:[['通し番号','C1　1／4　紙であること ほか','C1｜紙であること ほか'],['C3 見出し','版がいらないから、少なくても刷れる。','オリジナルを、もっと身近に。'],['C3 本文','デジタル印刷は版をつくりません。版代がかからないぶん、まとまった枚数を刷らなくても、お店だけのパッケージがつくれます。','製版不要のデジタル印刷と、共通仕様のパッケージを組み合わせることで、小ロットからのオリジナル印刷に対応。必要な分だけつくることで、余分な在庫や廃棄も抑えます。'],['C4 見出し','同じ注文で、デザインを変えられる。','コーヒーの個性を、一つひとつの袋に。'],['C4 本文','版がないので、1 回の注文の中で柄を分けられます。銘柄ごと、季節ごと、コラボごと。ここに並ぶ 9 枚も、すべて違うデザインです。','産地や銘柄、季節限定のコーヒーまで。デジタル印刷なら、一度の生産で複数のデザインにも対応できます。それぞれのコーヒーに合わせて、オリジナルのパッケージをつくれます。']] },
   ]},
 };
-const updIds = no => new Set((CHANGES[no] && CHANGES[no].ids) || []);
+const MEMO_AUDIT = {
+  '2': [['open','「アルミを使わない紙のパッケージが…」は、読みやすさの指摘後も現行 Figma で未変更です。']],
+  '3': [['partial','印刷事例・NODE と「刷っても、守る力は変わらない。」は撤去。TG-X3 の共同開発、フィルムの使用を抑えた構成、酸素・水蒸気透過度の実測値と注記は反映済みです。「紙マーク対象」「コーヒーに合うバリア性」は現行キャプションに未記載です。']],
+  '4': [['partial','「高バリア紙」の呼称は使われていません。一方、「アルミを使わず」は現行 Figma に残っており、素材の説明として妥当か確認が必要です。']],
+  '5': [['done','「豆を詰めた」→「商品を包んだ」、「きちんと自立」→「美しく自立」が反映されています。']],
+  '7': [['done','「自立する底」→「自立する形状」が反映されています。']],
+  '8': [['done','「やわらかな色」→「やわらかな風合い」が反映されています。']],
+  '9': [['done','通路側・奥側の配置を入れ替え、重複する製品説明を整理。Tomorrow Bag 3.0 と Future bio Bag の晒片艶紙もまとめられています。']],
+  '10': [['done','「殺さないよう」→「壊さないよう」、「日本の自社工場」→「国内の自社工場」が反映されています。']],
+  '14': [['partial','5 用途それぞれの説明とアパレルのバイオマス由来フィルム、PLANTIC ロゴは反映済み。ただし現行 Figma は小座布団 5 枚ではなく、幅 1150mm の座布団 1 枚の中で用途を分けています。']],
+  '21': [['done','工程を「使用 → 回収 → 再資源化」に整理し、分別・堆肥化の表現は外れています。']],
+  '22': [['done','C1〜C4 の見出しと本文が、専務の提示文案に更新されています。']],
+};
+function auditPanel(no){
+  const rows = MEMO_AUDIT[no]; if (!rows) return '';
+  const label = { done:'反映済み', partial:'一部反映', open:'未反映' };
+  return `<details class="upd audit" open><summary>専務メモ照合｜現行 Figma（9/24）</summary>${rows.map(([status,body]) => `<div class="it"><span class="result ${status}">${label[status]}</span>　${esc(body)}</div>`).join('')}</details>`;
+}
 function updPanel(no){
   const u = CHANGES[no]; if (!u) return '';
   const it = u.items.map((x, i) => `<div class="it"><div><span class="k">コメント ${i+1}</span><span class="cm">${esc(x.c)}</span></div><div><span class="k">対応</span>${esc(x.a)}</div>${(x.ba||[]).map(b => `<div class="ba">${esc(b[0])}：<s>${esc(b[1]).replace(/\n/g,' ')}</s> → <b>${esc(b[2]).replace(/\n/g,' ')}</b></div>`).join('')}${x.todo ? `<div class="todo">${esc(x.todo)}</div>` : ''}</div>`).join('');
-  return `<details class="upd" open><summary>専務コメント（${UPD_DATE}）への対応｜${u.items.length} 件　黄色＝今回変更した文言</summary>${it}</details>`;
+  return `<details class="upd"><summary>${UPD_DATE} 時点の対応履歴｜${u.items.length} 件（現行状況は上の照合結果）</summary>${it}</details>`;
 }
 /* ロール6面は、履歴に残る配置と現在のFigmaファイルの最終文言を組み合わせる。 */
 const ROLL_FACES = [
@@ -670,7 +698,7 @@ const ROLL_FACES = [
   ]},
 ];
 let FACES = EXHIBIT_FACES;
-const CROP = { text:{ roll:[1900,2620], fixF:[0,1300], fixG:[0,1300], fixH:[0,1300], wallA:[0,1050], wallB:[0,1050], wallC:[0,1000], wallD:[0,1000], island:[0,830], island2:[0,1200] }, print:{ roll:[1150,3250], fixF:[0,1300], fixG:[0,1300], fixH:[0,1300], wallA:[0,1050], wallB:[0,1050], wallC:[0,1000], wallD:[0,1000], island:[0,830], island2:[0,1200] } };
+const CROP = { text:{ roll:[1900,2620], fixF:[0,1200], fixG:[0,1300], fixH:[0,1300], wallA:[0,600], wallB:[0,600], wallC:[0,1000], wallD:[0,1000], island:[0,830], island2:[0,1200] }, print:{ roll:[1150,3250], fixF:[0,1200], fixG:[0,1300], fixH:[0,1300], wallA:[0,600], wallB:[0,600], wallC:[0,1000], wallD:[0,1000], island:[0,830], island2:[0,1200] } };
 const FONT = { sans:'"Noto Sans JP",sans-serif', serif:'"Noto Serif JP",serif', hand:'"Segoe Script","Bradley Hand",cursive' };
 
 /* ===== 状態 ===== */
@@ -683,6 +711,9 @@ const state = {
   local: {},       // 未保存の編集 {no:{nodeId:text}}
   db: null, focusId: null, pendingRender: false, busy: false,
 };
+// この時点のFigmaを正本とする。以前の共有原稿は履歴・コメントとして残し、表示には使わない。
+const FIGMA_SNAPSHOT_AT = '2026-09-24T12:45:00Z';
+const LOCAL_DRAFT_KEY = 'scaj_local_figma_20260924';
 try { const n = localStorage.getItem('scaj_myname'); state.myname = ['専務','スタッフ'].includes(n) ? n : '専務'; } catch(e){ state.myname = '専務'; }
 try { const r = localStorage.getItem('scaj_role'); state.role = ['exec','ogino'].includes(r) ? r : 'staff'; } catch(e){}
 try { const z = localStorage.getItem('scaj_zoom'); if (z && ['text','print','all'].includes(z)) state.zoom = z; } catch(e){}
@@ -690,22 +721,24 @@ const query = new URLSearchParams(location.search);
 try { const v = query.get('view') || localStorage.getItem('scaj_view'); if (['exhibit','roll'].includes(v)) state.view = v; } catch(e){}
 FACES = state.view === 'roll' ? ROLL_FACES : EXHIBIT_FACES;
 try { const f = query.get('face') || localStorage.getItem('scaj_face_' + state.view) || localStorage.getItem('scaj_face'); if (f && FACES.some(x=>x.no===f)) state.cur = f; else state.cur = FACES[0].no; } catch(e){ state.cur = FACES[0].no; }
-let legacyLocal = {};
-try { const l = JSON.parse(localStorage.getItem('scaj_local') || '{}'); if (l && typeof l === 'object') legacyLocal = l; } catch(e){}
-for (const f of EXHIBIT_FACES) if (legacyLocal[f.no]) state.local[f.no] = legacyLocal[f.no];
-try { const l = JSON.parse(localStorage.getItem('scaj_local_roll_final') || '{}'); if (l && typeof l === 'object') for (const f of ROLL_FACES) if (l[f.no]) state.local[f.no] = l[f.no]; } catch(e){}
+try { const l = JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY) || '{}'); if (l && typeof l === 'object') state.local = l; } catch(e){}
 
 const faceOf = no => FACES.find(f => f.no === no);
 const figmaText = (face, id) => { const t = face.texts.find(t => t[0] === id); return t ? t[12] : ''; };
-const baseText = (face, id) => face.kind === 'roll' ? figmaText(face, id) : (state.baseline && state.baseline.texts && state.baseline.texts[id] != null) ? state.baseline.texts[id] : figmaText(face, id);
-const savedText = (face, id) => { const d = state.docs[face.no]; return (d && d.texts && d.texts[id] != null) ? d.texts[id] : baseText(face, id); };
+const baseText = (face, id) => figmaText(face, id);
+const savedText = (face, id) => {
+  const d = state.docs[face.no], value = d && d.texts && d.texts[id];
+  if (value == null) return baseText(face, id);
+  const entries = (d.log || []).filter(e => e.id === id && e.at >= FIGMA_SNAPSHOT_AT);
+  return entries.length && entries[entries.length - 1].to === value ? value : baseText(face, id);
+};
 const curText = (face, id) => { const l = state.local[face.no]; return (l && l[id] != null) ? l[id] : savedText(face, id); };
 const hasUnsaved = face => { const l = state.local[face.no]; return !!l && Object.keys(l).some(id => face.texts.some(t => t[0] === id) && l[id] !== savedText(face, id)); };
 const hasDiff = face => face.texts.some(t => savedText(face, t[0]) !== baseText(face, t[0]));   // Figma に未反映
-const itemOf = (face, id) => { const a = state.approvals[face.no]; const it = a && a.items && a.items[id]; return (it && it.ok) ? it : null; };
+const itemOf = (face, id) => { const a = state.approvals[face.no]; const it = a && a.items && a.items[id]; return (it && it.ok && it.at >= FIGMA_SNAPSHOT_AT) ? it : null; };
 const itemStale = (face, id) => { const it = itemOf(face, id); return !!it && it.text !== savedText(face, id); };
 const itemState = (face, id) => { const it = itemOf(face, id); if (!it) return 'none'; if (itemStale(face, id)) return 'stale'; return it.figma === 'synced' ? 'synced' : (it.figma === 'error' ? 'error' : 'pending'); };
-const checkOf = (face, id) => { const a = state.approvals[face.no]; const c = a && a.checks && a.checks[id]; return (c && c.ok) ? c : null; };
+const checkOf = (face, id) => { const a = state.approvals[face.no]; const c = a && a.checks && a.checks[id]; return (c && c.ok && c.at >= FIGMA_SNAPSHOT_AT) ? c : null; };
 const checkState = (face, id) => { const c = checkOf(face, id); if (!c) return 'none'; return c.text !== savedText(face, id) ? 'stale' : 'ok'; };
 const printedIds = face => face.texts.filter(t => t[11]).map(t => t[0]);
 const faceAllChecked = face => { const ids = printedIds(face); return ids.length > 0 && ids.every(id => checkState(face, id) === 'ok'); };
@@ -713,14 +746,7 @@ const faceAllOk = face => { const ids = printedIds(face); return ids.length > 0 
 const pendingItems = face => face.texts.map(t => t[0]).filter(id => ['pending','error'].includes(itemState(face, id)));
 const fmt = iso => { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return ''; return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const saveLocal = () => { try {
-  const exhibit = Object.assign({}, legacyLocal), roll = {};
-  for (const f of EXHIBIT_FACES) { delete exhibit[f.no]; if (state.local[f.no]) exhibit[f.no] = state.local[f.no]; }
-  for (const f of ROLL_FACES) if (state.local[f.no]) roll[f.no] = state.local[f.no];
-  localStorage.setItem('scaj_local', JSON.stringify(exhibit));
-  localStorage.setItem('scaj_local_roll_final', JSON.stringify(roll));
-  legacyLocal = exhibit;
-} catch(e){} };
+const saveLocal = () => { try { localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(state.local)); } catch(e){} };
 const isNarrow = () => window.innerWidth <= 820;
 const k = id => id.replace(':','_');
 const whoName = () => state.myname || '専務';
@@ -738,7 +764,11 @@ function renderFaces(){
     if (faceAllOk(f)) { const ok = document.createElement('span'); ok.className='ok'; ok.textContent = '✓'; ok.title='専務 確認済'; b.appendChild(ok); }
 
     if (hasDiff(f) || hasUnsaved(f)) { const c = document.createElement('span'); c.className='chg'; c.title = hasUnsaved(f) ? '未保存の編集あり' : 'Figma に未反映の変更あり'; b.appendChild(c); }
-    if (CHANGES[f.no]) { const u = document.createElement('span'); u.className='u'; u.textContent = UPD_DATE; u.title = '専務コメント（' + UPD_DATE + '）を反映済み'; b.appendChild(u); }
+    if (MEMO_AUDIT[f.no]) {
+      const status = MEMO_AUDIT[f.no][0][0], labels = { done:'済', partial:'一部', open:'未' };
+      const u = document.createElement('span'); u.className='u ' + status; u.textContent = labels[status];
+      u.title = '専務メモ：' + ({ done:'反映済み', partial:'一部反映', open:'未反映' })[status]; b.appendChild(u);
+    }
     { const d = state.docs[f.no]; if (d && d.comments && d.comments.length) { const c = document.createElement('span'); c.className='cm'; c.textContent = '💬'; c.title='コメントあり'; b.appendChild(c); } }
     b.addEventListener('click', () => selectFace(f.no));
     nav.appendChild(b);
@@ -783,9 +813,15 @@ function renderPreview(){
     el.style.background = fillOf(fill);
     if (kind === 'e') el.style.borderRadius = '50%';
     if (kind === 'l') { el.style.borderTopWidth = sw+'px'; } else { el.style.borderWidth = sw+'px'; }
-    if (rot) { el.style.transformOrigin = '0 0'; el.style.transform = 'rotate(' + (-rot) + 'deg)'; }
-    if (name === '印刷範囲') { el.style.borderStyle = 'dashed'; el.style.opacity = .5; }
+    if (rot) { el.style.transformOrigin = r[9] === 'center' ? '50% 50%' : '0 0'; el.style.transform = 'rotate(' + (-rot) + 'deg)'; }
+    if (name === '印刷範囲' || name.includes('展示スペース') || name.includes('パンフレット直置き')) { el.style.borderStyle = 'dashed'; el.style.opacity = .65; }
     fr.appendChild(el);
+  }
+  if (face.kind === 'wallA') {
+    const logo = document.createElement('img');
+    logo.src = 'assets/plantic-kuraray-geopack.png'; logo.alt = 'PLANTIC・クラレ × GEOPACK';
+    logo.style.cssText = 'position:absolute;left:872px;top:316px;width:128px;height:34px;object-fit:contain';
+    fr.appendChild(logo);
   }
   for (const t of face.texts) {
     const [id,name,x,y,w,font,weight,size,lh,align,color] = t; const trot = t[13];
@@ -797,7 +833,6 @@ function renderPreview(){
     el.textContent = curText(face, id);
     if (trot) { el.style.transformOrigin = '50% 50%'; el.style.transform = 'rotate(' + (-trot) + 'deg)'; }
     if (state.focusId === id) el.classList.add('hl');
-    if (updIds(face.no).has(id)) el.classList.add('updt');
     el.addEventListener('click', () => { const ta = document.getElementById('ta-' + k(id)); if (ta) { ta.focus(); ta.scrollIntoView({block:'center', behavior:'smooth'}); } });
     fr.appendChild(el);
   }
@@ -819,7 +854,7 @@ function fitPreview(){
   fr.style.transform = `scale(${s})`;
   fr.style.left = Math.max(0, (W - face.w*s)/2) + 'px';
   fr.style.top = (-y0*s + Math.max(0, (H - ch)/2)) + 'px';
-  $('#flnote').textContent = (OUTER[face.kind] ? '外枠＝' + OUTER[face.kind] + '　' : '') + 'Figma の図と同じ' + `　表示倍率 ${(s*100).toFixed(0)}%`;
+  $('#flnote').textContent = (OUTER[face.kind] ? '外枠＝' + OUTER[face.kind] + '　' : '') + '現行 Figma を基にしたレビュー図' + `　表示倍率 ${(s*100).toFixed(0)}%`;
 }
 new ResizeObserver(fitPreview).observe($('#stage'));
 [['zoomText','text'],['zoomPrint','print'],['zoomAll','all']].forEach(([id,z]) => $('#'+id).addEventListener('click', () => { state.zoom = z; try{localStorage.setItem('scaj_zoom', z)}catch(e){}; renderPreview(); }));
@@ -837,14 +872,14 @@ function renderEditor(){
   const chkCount = ids.filter(id => checkState(face, id) === 'ok').length;
   const prog = ids.length ? `<span class="pl">専務 確認</span><span class="pn"><b>${okCount}</b>／${ids.length}</span>` : '';
   let html = `<h2><span class="no">面 ${face.no}</span><span class="fn">${esc(face.name)}</span></h2>${prog || unsaved ? `<div class="prog">${prog}${unsaved ? '<span class="badge warn">未保存あり</span>' : ''}</div>` : ''}`;
-  html += updPanel(face.no);
+  html += auditPanel(face.no) + updPanel(face.no);
   if (!state.db) html += `<div class="offline">保存先（Firebase）に接続していません。編集内容はこの端末だけに残ります。</div>`;
   const log = doc.log || [];
   const can = state.db && !state.busy;
   const fld = (t, memo) => {
     const [id,name,,,w,font,,size] = t;
     const v = curText(face, id); const b = baseText(face, id); const sv = savedText(face, id);
-    const changed = sv !== b; const dirty = v !== sv; const big = size >= 30; const upd = updIds(face.no).has(id);
+    const changed = sv !== b; const dirty = v !== sv; const big = size >= 30;
     const it = itemOf(face, id); const stt = itemState(face, id);
     const last = [...log].reverse().find(e => e.id === id);
     const ck = checkOf(face, id); const cst = checkState(face, id);
@@ -861,7 +896,7 @@ function renderEditor(){
     if (last && last.from !== undefined) info.push(`最終変更：${esc(last.by)}さん ${fmt(last.at)}　前「${esc(last.from)}」`);
     if (changed) info.push(`Figma 現在：<b>${esc(b)}</b><button type="button" data-revert="${id}">Figma の文言に戻す</button>`);
     return `<div class="fld${changed ? ' diff' : ''}${dirty ? ' unsaved' : ''} s-${stt}">
-      <div class="lab"><span class="nm">${esc(String(name).replace(/（[^）]*）/g, ''))}<span class="cnt" id="cnt-${k(id)}">${v.replace(/\n/g,'').length}字</span>${upd ? `<span class="badge u">${UPD_DATE} 変更</span>` : ''}${dirty ? '<span class="badge warn">未保存</span>' : ''}</span>${btns}</div>
+      <div class="lab"><span class="nm">${esc(String(name).replace(/（[^）]*）/g, ''))}<span class="cnt" id="cnt-${k(id)}">${v.replace(/\n/g,'').length}字</span>${dirty ? '<span class="badge warn">未保存</span>' : ''}</span>${btns}</div>
       <textarea id="ta-${k(id)}" data-id="${id}" rows="${Math.max(1, Math.min(8, v.split('\n').length + (v.length > 40 ? 2 : 0)))}" class="${big?'big':''}" spellcheck="false">${esc(v)}</textarea>
       <details class="more"><summary>詳細${changed ? '<span class="w">Figma と違う</span>' : ''}</summary><div class="fig">${info.join('<br>')}</div></details>
     </div>`;
@@ -920,7 +955,7 @@ async function saveDraft(face){
   if (!entries.length) { delete state.local[face.no]; saveLocal(); return true; }
   const d = state.docs[face.no] || {};
   const log = (d.log || []).concat(entries).slice(-120);
-  const body = { texts, updatedAt: now, updatedBy: whoName(), log };
+  const body = { texts: Object.assign({}, d.texts || {}, texts), updatedAt: now, updatedBy: whoName(), log };
   try {
     await writeDoc(state.db.doc(docPath(face, 'faces')), body);
     state.docs[face.no] = Object.assign({}, d, { texts: Object.assign({}, d.texts || {}, texts), updatedAt: now, updatedBy: whoName(), log });
@@ -938,7 +973,8 @@ async function approveItem(face, id){
     if (hasUnsaved(face)) { const ok = await saveDraft(face); if (!ok) return; }
     const rec = { ok: true, by: '専務', at: new Date().toISOString(), text: savedText(face, id), figma: 'pending', error: '', syncedAt: '' };
     const aref = state.db.doc(docPath(face, 'approvals'));
-    try { await writeDoc(aref, { items: { [id]: rec } }); }
+    const prior = state.approvals[face.no] || {};
+    try { await writeDoc(aref, { items: Object.assign({}, prior.items || {}, { [id]: rec }) }); }
     catch (e) {
       setMsg((e && e.code === 'invalid_argument') ? '確認を記録できませんでした。このページの編集権限が必要です。' : '確認を記録できませんでした（' + ((e && e.code) || '') + '）', 'err');
       return;
@@ -954,7 +990,8 @@ async function checkItem(face, id){
   try {
     if (hasUnsaved(face)) { const ok = await saveDraft(face); if (!ok) return; }
     const rec = { ok: true, by: '荻野', at: new Date().toISOString(), text: savedText(face, id) };
-    try { await writeDoc(state.db.doc(docPath(face, 'approvals')), { checks: { [id]: rec } }); }
+    const prior = state.approvals[face.no] || {};
+    try { await writeDoc(state.db.doc(docPath(face, 'approvals')), { checks: Object.assign({}, prior.checks || {}, { [id]: rec }) }); }
     catch (e) { setMsg((e && e.code === 'invalid_argument') ? '確認を記録できませんでした。確認・OK はページの編集権限がある方のみ記録できます。' : '確認を記録できませんでした（' + ((e && e.code) || '') + '）', 'err'); return; }
     const a = state.approvals[face.no] || {}; a.checks = Object.assign({}, a.checks || {}, { [id]: rec }); state.approvals[face.no] = a;
     setMsg('荻野 確認を記録しました', 'ok');
@@ -963,16 +1000,18 @@ async function checkItem(face, id){
 async function uncheckItem(face, id){
   if (!state.db || state.busy) return;
   try {
-    await state.db.doc(docPath(face, 'approvals')).update({ checks: { [id]: { ok: false } } });
-    const a = state.approvals[face.no]; if (a && a.checks && a.checks[id]) a.checks[id] = { ok: false };
+    const a = state.approvals[face.no] || {};
+    await state.db.doc(docPath(face, 'approvals')).update({ checks: Object.assign({}, a.checks || {}, { [id]: { ok: false } }) });
+    if (a.checks && a.checks[id]) a.checks[id] = { ok: false };
     setMsg('確認を取り消しました', 'ok'); renderFaces(); renderEditor();
   } catch (e) { setMsg((e && e.code === 'invalid_argument') ? '取り消しは編集権限のある方のみ行えます' : '取り消せませんでした', 'err'); }
 }
 async function unapproveItem(face, id){
   if (!state.db || state.busy) return;
   try {
-    await state.db.doc(docPath(face, 'approvals')).update({ items: { [id]: { ok: false } } });
-    const a = state.approvals[face.no]; if (a && a.items && a.items[id]) a.items[id] = { ok: false };
+    const a = state.approvals[face.no] || {};
+    await state.db.doc(docPath(face, 'approvals')).update({ items: Object.assign({}, a.items || {}, { [id]: { ok: false } }) });
+    if (a.items && a.items[id]) a.items[id] = { ok: false };
     setMsg('確認を取り消しました', 'ok'); renderFaces(); renderEditor();
   } catch (e) { setMsg((e && e.code === 'invalid_argument') ? '取り消しには編集権限が必要です' : '取り消せませんでした', 'err'); }
 }
@@ -986,16 +1025,16 @@ async function addComment(face){
 
 /* ===== イベント ===== */
 $('#exportBtn').addEventListener('click', async () => {
-  const lines = ['【SCAJ2026 ロール文言 保存データ】' + new Date().toLocaleString('ja-JP')];
+  const lines = ['【SCAJ2026 現行 Figma 以降の保存データ】' + new Date().toLocaleString('ja-JP')];
   for (const f of FACES) {
     const d = state.docs[f.no] || {}; const a = state.approvals[f.no] || {};
     const changed = f.texts.filter(t => savedText(f, t[0]) !== baseText(f, t[0]));
     const items = a.items || {}, checks = a.checks || {};
-    const anyMark = Object.values(items).some(x => x && x.ok) || Object.values(checks).some(x => x && x.ok);
+    const anyMark = f.texts.some(t => itemOf(f, t[0]) || checkOf(f, t[0]));
     if (!changed.length && !anyMark && !(d.comments && d.comments.length)) continue;
     lines.push('', `■ 面 ${f.no}｜${f.name}`);
     for (const t of f.texts) {
-      const id = t[0]; const ch = savedText(f, id) !== baseText(f, id); const ck = checks[id] && checks[id].ok, ok = items[id] && items[id].ok;
+      const id = t[0]; const ch = savedText(f, id) !== baseText(f, id); const ck = checkOf(f, id), ok = itemOf(f, id);
       if (!ch && !ck && !ok) continue;
       lines.push(`・${t[1]}［${id}］　専務:${ok ? (items[id].text === savedText(f, id) ? '✓' : '要再確認') : '－'}`);
       if (ch) lines.push(`　前：${baseText(f, id).replace(/\n/g,'／')}`, `　後：${savedText(f, id).replace(/\n/g,'／')}`);
