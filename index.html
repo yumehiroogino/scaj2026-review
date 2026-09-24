@@ -735,9 +735,9 @@ const savedText = (face, id) => {
 const curText = (face, id) => { const l = state.local[face.no]; return (l && l[id] != null) ? l[id] : savedText(face, id); };
 const hasUnsaved = face => { const l = state.local[face.no]; return !!l && Object.keys(l).some(id => face.texts.some(t => t[0] === id) && l[id] !== savedText(face, id)); };
 const hasDiff = face => face.texts.some(t => savedText(face, t[0]) !== baseText(face, t[0]));   // Figma に未反映
-const itemOf = (face, id) => { const a = state.approvals[face.no]; const it = a && a.items && a.items[id]; return (it && it.ok && it.at >= FIGMA_SNAPSHOT_AT) ? it : null; };
+const itemOf = (face, id) => { const a = state.approvals[face.no]; const it = a && a.items && a.items[id]; return (it && it.ok) ? it : null; };
 const itemStale = (face, id) => { const it = itemOf(face, id); return !!it && it.text !== savedText(face, id); };
-const itemState = (face, id) => { const it = itemOf(face, id); if (!it) return 'none'; if (itemStale(face, id)) return 'stale'; return it.figma === 'synced' ? 'synced' : (it.figma === 'error' ? 'error' : 'pending'); };
+const itemState = (face, id) => { const it = itemOf(face, id); if (!it) return 'none'; return it.figma === 'synced' ? 'synced' : (it.figma === 'error' ? 'error' : 'pending'); };
 const checkOf = (face, id) => { const a = state.approvals[face.no]; const c = a && a.checks && a.checks[id]; return (c && c.ok && c.at >= FIGMA_SNAPSHOT_AT) ? c : null; };
 const checkState = (face, id) => { const c = checkOf(face, id); if (!c) return 'none'; return c.text !== savedText(face, id) ? 'stale' : 'ok'; };
 const printedIds = face => face.texts.filter(t => t[11]).map(t => t[0]);
@@ -891,7 +891,7 @@ function renderEditor(){
     info.push(`${font==='serif'?'明朝':font==='hand'?'手書き体':'ゴシック'} ${size}px／幅 ${w}`);
     if (!memo) {
 
-      if (stt === 'stale') info.push(`専務 確認後に変更あり（確認時「${esc(it.text)}」）`); else if (stt !== 'none') info.push(`専務 確認 ${fmt(it.at)}`);
+      if (stt !== 'none') info.push(`専務 確認 ${fmt(it.at)}` + (itemStale(face, id) ? `（確認後に変更あり：確認時「${esc(it.text)}」）` : ''));
     }
     if (last && last.from !== undefined) info.push(`最終変更：${esc(last.by)}さん ${fmt(last.at)}　前「${esc(last.from)}」`);
     if (changed) info.push(`Figma 現在：<b>${esc(b)}</b><button type="button" data-revert="${id}">Figma の文言に戻す</button>`);
